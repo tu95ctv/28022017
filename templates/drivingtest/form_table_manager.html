@@ -1,36 +1,31 @@
 {% load crispy_forms_tags %}
 {% load render_table from django_tables2 %}
 <div >
-<div id="info_for_alert_box">{%if info_for_alert_box%}{{info_for_alert_box}}{%endif%}</div>
-<div class="col-sm-4 form-manager_r">
-		{%if form %}
-		{% crispy form %}
-		{%endif%}
-		
-		{{form_notification |safe}}
-		
-</div>
-<div class="col-sm-12 table-manager_r">
-{%if table_notification %}
-		{{table_notification |safe}}
-{%endif%}
-
-{%if table %}
-{%if table.aggr %}
-{% render_table table "drivingtest/custom_table_template_bcn.html" %}
-{%else%}
-{% render_table table "drivingtest/custom_table_template_mll.html" %}
-{%endif%}
-{%endif%}
-</div>
-
-<div class="col-sm-12 table-manager_r2">
-{%if table_notification2 %}
-		{{table_notification2 |safe}}
-{%endif%}
-
-{%if table2 %}
-{% render_table table2 "drivingtest/custom_table_template_mll.html" %}
-{%endif%}
-</div>
+   <div id="info_for_alert_box">{%if info_for_alert_box%}{{info_for_alert_box}}{%endif%}</div>
+   <div class="col-sm-4 form-manager_r">
+      {%if form %}
+      {% crispy form %}
+      {%endif%}
+      {{form_notification|safe}}
+   </div>
+   <div class="col-sm-12 table-manager_r">
+      {%if table_notification %}
+      {{table_notification |safe}}
+      {%endif%}
+      {%if table %}
+      {%if table.aggr %}
+      {% render_table table "drivingtest/custom_table_template_bcn.html" %}
+      {%else%}
+      {% render_table table "drivingtest/custom_table_template_mll.html" %}
+      {%endif%}
+      {%endif%}
+   </div>
+   <div class="col-sm-12 table-manager_r2">
+      {%if table_notification2 %}
+      {{table_notification2 |safe}}
+      {%endif%}
+      {%if table2 %}
+      {% render_table table2 "drivingtest/custom_table_template_mll.html" %}
+      {%endif%}
+   </div>
 </div>

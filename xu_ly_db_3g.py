@@ -1848,8 +1848,13 @@ def so_tram_cho_RNC():
             so_luong_tram=1
         site0.so_luong_tram = so_luong_tram
         site0.save()
-
+def set_password_for_user(str_username,new_pass):
+    u = User.objects.get(username__exact=str_username)
+    u.set_password(new_pass)
+    u.save()
+    print u'đã reset password thành công cho username %s'%str_username
 if __name__ == '__main__':
+    set_password_for_user('tund','228787')
     #import django
     #django.setup()
     '''

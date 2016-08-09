@@ -2,20 +2,9 @@
 '#print in form 4'
 from django.utils import timezone
 from unidecode import unidecode
-from ckeditor.widgets import CKEditorWidget
+#from ckeditor.widgets import CKEditorWidget
 from __builtin__ import str, type
 import pytz
-import locale
-import decimal
-
-#from django.utils.timezone import activate
-'''
-import os
-from LearnDriving.settings import TIME_ZONE
-SETTINGS_DIR = os.path.dirname(__file__)
-MEDIA_ROOT = os.path.join(SETTINGS_DIR, 'media')
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'LearnDriving.settings')
-'''
 from django import forms
 from models import SuCo,Tram,Mll, Lenh, SearchHistory, Comment, DoiTac, TrangThai, UserProfile, DuAn, SpecificProblem, FaultLibrary,ThietBi, EditHistory
 from crispy_forms.layout import Submit, Field
@@ -508,11 +497,11 @@ class ThietBiForm(BaseFormForManager):
     ngay_gio_sua =forms.DateTimeField(label=u"Ngày giờ sửa",input_formats = [D4_DATETIME_FORMAT],required =False,widget =forms.DateTimeInput(format=D4_DATETIME_FORMAT,attrs={"readonly":"readonly"}))
     nguoi_tao = forms.CharField(label=u"Người tạo",widget=forms.TextInput(attrs={"readonly":"readonly"}),required =False)
     nguoi_sua_cuoi_cung = forms.CharField(label=u"Người sửa cuối cùng",widget=forms.TextInput(attrs={"readonly":"readonly"}),required =False)
-    #ghi_chu_2 = forms.CharField(label=u"ghi_chu_2",widget=CKEditorWidget(),required =False)
+    #ghi_chu_2 = forms.CharField(label=u"ghi_chu_2",widget=forms.Textarea(),required =False)
     class Meta:
         model = ThietBi
         fields = '__all__'
-        widgets = { 'ghi_chu': CKEditorWidget(),\
+        widgets = { 'ghi_chu': forms.Textarea(),\
                    'ly_do_sua':forms.TextInput(attrs={"readonly":"readonly"}),\
             } 
 class LenhForm(BaseFormForManager):
@@ -526,7 +515,7 @@ class LenhForm(BaseFormForManager):
         
     class Meta:
         model = Lenh
-        widgets = {'command':forms.Textarea(attrs={'style':'height:300px;resize:vertical'}),'ghi_chu_lenh':CKEditorWidget(config_name = 'lenh_ckeditor')
+        widgets = {'command':forms.Textarea(attrs={'style':'height:300px;resize:vertical'}),'ghi_chu_lenh':forms.Textarea()#config_name = 'lenh_ckeditor'
                    }
         #exclude = ('ngay_gio_tao','ngay_gio_sua','nguoi_sua_cuoi_cung','nguoi_tao','ly_do_sua')
         exclude = ('Name_khong_dau',)
@@ -540,7 +529,7 @@ class DoiTacForm(BaseFormForManager):
     class Meta:
         model = DoiTac
         exclude = ('Name_khong_dau',)
-        widgets = { 'ghi_chu':CKEditorWidget,
+        widgets = { 'ghi_chu':forms.Textarea,
                    'ly_do_sua':forms.TextInput(attrs={"readonly":"readonly"}),\
             } 
     
@@ -553,7 +542,7 @@ class CaTrucForm(BaseFormForManager):
     class Meta:
         model = CaTruc
         fields = '__all__'
-        widgets = { 'ghi_chu': CKEditorWidget(),\
+        widgets = { 'ghi_chu': forms.Textarea(),\
                    'ly_do_sua':forms.TextInput(attrs={"readonly":"readonly"}),\
             }
 class TinhForm(BaseFormForManager):
@@ -564,7 +553,7 @@ class TinhForm(BaseFormForManager):
     class Meta:
         model = Tinh
         fields = '__all__'
-        widgets = { 'ghi_chu': CKEditorWidget,\
+        widgets = { 'ghi_chu': forms.Textarea,\
                    'ly_do_sua':forms.TextInput(attrs={"readonly":"readonly"}),\
             }   
         #exclude = ('is_duoc_tao_truoc',)
@@ -585,7 +574,7 @@ class BSCRNCForm(BaseFormForManager):
     class Meta:
         model = BSCRNC
         fields = '__all__'
-        widgets = { 'ghi_chu': CKEditorWidget,\
+        widgets = { 'ghi_chu': forms.Textarea,\
                    'ly_do_sua':forms.TextInput(attrs={"readonly":"readonly"}),\
             }   
         #exclude = ('is_duoc_tao_truoc',)
@@ -597,7 +586,7 @@ class TrangThaiForm(BaseFormForManager):
     nguoi_sua_cuoi_cung = forms.CharField(label=u"Người sửa cuối cùng",widget=forms.TextInput(attrs={"readonly":"readonly"}),required =False)
     class Meta:
         model = TrangThai
-        widgets = { 'ghi_chu': CKEditorWidget,\
+        widgets = { 'ghi_chu': forms.Textarea,\
                    'ly_do_sua':forms.TextInput(attrs={"readonly":"readonly"}),\
             }  
         exclude = ('Name_khong_dau','nguoi_tao','nga_gio_tao','nguoi_sua_cuoi_cung','ngay_gio_sua')
@@ -616,7 +605,7 @@ class DuAnForm(BaseFormForManager):
     class Meta:
         model = DuAn
         exclude = ('is_duoc_tao_truoc','Name_khong_dau')
-        widgets = { 'ghi_chu': CKEditorWidget,\
+        widgets = { 'ghi_chu': forms.Textarea,\
                     'ly_do_sua':forms.TextInput(attrs={"readonly":"readonly"}),\
 
                    #'ngay_gio_tao':forms.DateTimeInput(format=D4_DATETIME_FORMAT,attrs={"disabled":"disabled"}) ,\
@@ -634,7 +623,7 @@ class FaultLibraryForm(BaseFormForManager):
     nguoi_sua_cuoi_cung = forms.CharField(label=u"Người sửa cuối cùng",widget=forms.TextInput(attrs={"readonly":"readonly"}),required =False)
     class Meta:
         model = FaultLibrary
-        widgets = { 'ghi_chu': CKEditorWidget,\
+        widgets = { 'ghi_chu': forms.Textarea,\
                    'ly_do_sua':forms.TextInput(attrs={"disabled":"disabled"}),\
      
             }
@@ -649,7 +638,7 @@ class ThaoTacLienQuanForm(BaseFormForManager):
     nguoi_sua_cuoi_cung = forms.CharField(label=u"Người sửa cuối cùng",widget=forms.TextInput(attrs={"readonly":"readonly"}),required =False)
     class Meta:
         model = ThaoTacLienQuan
-        widgets = { 'ghi_chu': CKEditorWidget,\
+        widgets = { 'ghi_chu': forms.Textarea,\
                    'ly_do_sua':forms.TextInput(attrs={"readonly":"readonly"}),\
         
             }
@@ -663,7 +652,7 @@ class SuCoForm(BaseFormForManager):
     nguoi_sua_cuoi_cung = forms.CharField(label=u"Người sửa cuối cùng",widget=forms.TextInput(attrs={"readonly":"readonly"}),required =False)
     class Meta:
         model = SuCo
-        widgets = { 'ghi_chu': CKEditorWidget,\
+        widgets = { 'ghi_chu': forms.Textarea,\
 
                    'ly_do_sua':forms.TextInput(attrs={"readonly":"readonly"}),\
 
@@ -802,7 +791,7 @@ class CommentForm(BaseFormForManager):
     ngay_gio_sua =forms.DateTimeField(label=u"Ngày giờ sửa",input_formats = [D4_DATETIME_FORMAT],required =False,widget =forms.DateTimeInput(format=D4_DATETIME_FORMAT,attrs={"readonly":"readonly"}))
     nguoi_tao = forms.CharField(label=u"Người tạo",widget=forms.TextInput(attrs={"readonly":"readonly"}),required =False)
     nguoi_sua_cuoi_cung = forms.CharField(label=u"Người sửa cuối cùng",widget=forms.TextInput(attrs={"readonly":"readonly"}),required =False)
-    #comment = forms.CharField(required = False,max_length=2000,widget=CKEditorWidget())
+    #comment = forms.CharField(required = False,max_length=2000,widget=forms.Textarea())
     #mll = forms.CharField(required=False)
     def __init__(self,*args, **kw):
         self.mll = kw.pop('mll',None)
@@ -985,7 +974,7 @@ class MllForm(BaseFormForManager):
     thao_tac_lien_quan = forms.CharField(label = u'Thao tác liên quan',help_text = u'Có thể chọn nhiều thao tác',required=False,widget=forms.TextInput(attrs={'class':'autocomplete'}))
     comment = forms.CharField(label = u'Comment:',widget=forms.Textarea(attrs={'class':'form-control'}),required=False)
     specific_problem_m2m = forms.CharField(label = u'Specific Problem',help_text=u'Input format: Mã lỗi**thành phần bị lỗi, hoặc: Mã lỗi** ,hoặc: Thành phần bị lỗi',required=False,widget=forms.Textarea(attrs={'class':'form-control autocomplete','style':"height:120px"}))
-    #specific_problem_m2m = forms.CharField(label = u'Specific Problem',help_text=u'Input format: Mã lỗi**thành phần bị lỗi, hoặc: Mã lỗi** ,hoặc: Thành phần bị lỗi',required=False,widget=CKEditorWidget(attrs={'class':'form-control autocomplete'}))
+    #specific_problem_m2m = forms.CharField(label = u'Specific Problem',help_text=u'Input format: Mã lỗi**thành phần bị lỗi, hoặc: Mã lỗi** ,hoặc: Thành phần bị lỗi',required=False,widget=forms.Textarea(attrs={'class':'form-control autocomplete'}))
     is_admin_set_create_html_table_edittion_history = True
     ngay_gio_tao =forms.DateTimeField(label=u"Ngày giờ tạo",input_formats = [D4_DATETIME_FORMAT],required =False,widget =forms.DateTimeInput(format=D4_DATETIME_FORMAT,attrs={"readonly":"readonly"}))
     ngay_gio_sua =forms.DateTimeField(label=u"Ngày giờ sửa",input_formats = [D4_DATETIME_FORMAT],required =False,widget =forms.DateTimeInput(format=D4_DATETIME_FORMAT,attrs={"readonly":"readonly"}))
@@ -1010,7 +999,7 @@ TabHolder(
         Div(AppendedText('gio_mat','<span class="glyphicon glyphicon-calendar"></span>'),css_class='input-group date datetimepicker'),\
         Div(AppendedText('gio_tot','<span class="glyphicon glyphicon-calendar"></span>'),css_class='input-group date datetimepicker'),'id', css_class= 'col-sm-6'),
     Div('site_name',  AppendedText('thiet_bi','<span class="glyphicon glyphicon-plus"></span>'),AppendedText('du_an','<span class="glyphicon glyphicon-plus"></span>'),'giao_ca','ung_cuu','nghiem_trong', css_class= 'col-sm-6')
-    ,Div('specific_problem_m2m',HTML('<button type="button" id="replace-carrier-return" style="float:right;background:green;">Replace CR</button>'),css_class="col-sm-12")
+    ,Div('specific_problem_m2m',HTML('<button type="button" id="replace-carrier-return" style="">Replace CR</button>'),css_class="col-sm-12")
     ,css_class = "col-sm-8"),
     
     Div(HTML('<h4>Comment đầu tiên</h4>'),Div(AppendedText('datetime','<span class="glyphicon glyphicon-calendar"></span>'),css_class='input-group date datetimepicker'),
@@ -1157,22 +1146,7 @@ TabHolder(
             return return_value
         else:
             return None
-    '''
-    def clean_thiet_bi(self): 
-        value = self.cleaned_data['thiet_bi'].lstrip().rstrip()
-        if value:
-            try:
-                return_value = ThietBi.objects.get(Name = value)
-            except ThietBi.DoesNotExist:
-                if not self.is_loc:
-                    return_value = ThietBi(Name=value,nguoi_tao = self.request.user)
-                    return_value.save()
-                else:
-                    return_value = None
-            return return_value
-        else:
-            return None
-    '''
+
     def clean_thiet_bi(self):
         query = self.cleaned_data['thiet_bi'].lstrip().rstrip()
         if query:
@@ -1417,11 +1391,7 @@ class TramForm(BaseFormForManager):
                 
         )
     )
-    '''
-    def update_action_and_button(self,*args, **kwargs):
-        super(TramForm, self).update_action_and_button(*args, **kwargs)
-        self.create_html_table_edittion_history()
-    '''
+
     class Meta:
         model = Tram
         exclude=['License_60W_Power']

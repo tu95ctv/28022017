@@ -79,8 +79,9 @@ STATIC_ROOT = os.path.join(PROJECT_PATH,'collect/static')
 #CKEDITOR_JQUERY_URL = '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js'
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
-STATIC_URL = '/static/'
-CKEDITOR_UPLOAD_PATH = 'content/ckeditor/' 
+STATIC_URL = '/static_ndt/'
+#CKEDITOR_UPLOAD_PATH = 'content/ckeditor/' 
+'''
 CKEDITOR_CONFIGS = {
     'default': {
         #'toolbar': 'full',
@@ -93,7 +94,7 @@ CKEDITOR_CONFIGS = {
         'width': '100%'
     },
 }
-
+'''
 # Additional locations of static files
 STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
@@ -170,7 +171,7 @@ INSTALLED_APPS = (
     #'wishlist',
     'crispy_forms',
     'django_tables2_reports',
-    'ckeditor',
+    #'ckeditor',
     #'shop'
 )
 

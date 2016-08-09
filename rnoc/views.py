@@ -3,6 +3,7 @@
 #CK editor day 24/04/2016
 import sys  
 import os
+from django.utils.datastructures import MultiValueDictKeyError
 reload(sys)  
 sys.setdefaultencoding('utf-8')
 from django.db.models import F,Sum,IntegerField,FloatField
@@ -17,14 +18,13 @@ from forms import  TramForm, \
     TramTable, MllForm, MllTable, LenhTable, LenhForm, SearchHistoryTable,\
     ModelManagerForm, UserProfileForm_re
 from django.http import HttpResponse, HttpResponseBadRequest
-from django.contrib.auth import authenticate, login, logout, REDIRECT_FIELD_NAME
+from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, timedelta
 from django.db.models import Q
 
 import collections
-import tempfile, zipfile
 from django.contrib.auth.models import User
 from rnoc.models import ThaoTacLienQuan, Tinh, BCNOSS, ThietBi,\
     BTSType
@@ -34,27 +34,21 @@ from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.forms import PasswordChangeForm, AuthenticationForm
 from django.core.urlresolvers import reverse
 from django.template.response import TemplateResponse
-from django.views.decorators.cache import never_cache
-from django.utils.http import is_safe_url
 #from django.contrib.sites.models import get_current_site
 from LearnDriving.settings import TIME_ZONE
 from django.db.models.expressions import When, Case, ExpressionWrapper
 from django.db.models.aggregates import  Avg
 from django.db.models.aggregates import Count
-from django import db
-from django.db import connection
 from decimal import Decimal
 import operator
-from django.conf import settings #or from my_project import settings
 from itertools import chain
 from toold4 import  recognize_fieldname_of_query, luu_doi_tac_toold4
 from xu_ly_db_3g import tao_script, import_database_4_cai_new, init_rnoc,\
-    export_excel_bcn, thongkebcn_generator, ApiDataset
+    export_excel_bcn, thongkebcn_generator
 tao_script
 import xlrd
 import re
 from exceptions import Exception
-import ntpath
 from sendmail import send_email
 from django_tables2_reports.config import RequestConfigReport as RequestConfig
 
@@ -65,10 +59,8 @@ try:
     from django.utils import simplejson
 except:
     import json as simplejson
-from rnoc.forms import UserForm, UserProfileForm, CHOICES, ThietBiForm,\
-    VERBOSE_CLASSNAME, BCNOSSForm, BCNOSSTable, ThongKeTable,\
-    ThongKeNgayThangTable
-    
+from rnoc.forms import UserForm, UserProfileForm,\
+    VERBOSE_CLASSNAME, BCNOSSForm, BCNOSSTable, D4_DATETIME_FORMAT
 import models
 import forms#cai nay quan trong khong duoc xoa
 
@@ -81,14 +73,10 @@ MYD4_LOOKED_FIELD = collections.OrderedDict(ship)
 SHORT_DATETIME_FORMAT = "Y-m-d H:i"
 ################CHUNG######################
 def register(request):
-    # Like before, get the request's context.
     context = RequestContext(request)
 
-    # A boolean value for telling the template whether the registration was successful.
-    # Set to False initially. Code changes value to True when registration succeeds.
     registered = False
 
-    # If it's a HTTP POST, we're interested in processing form data.
     if request.method == 'POST':
         # Attempt to grab information from the raw form information.
         # Note that we make use of both UserForm and UserProfileForm.
@@ -115,20 +103,11 @@ def register(request):
     
             # Did the user provide a profile picture?
             # If so, we need to get it from the input form and put it in the UserProfile model.
-            '''
-            if 'picture' in request.FILES:
-                profile.picture = request.FILES['picture']
-            '''
-    
-            # Now we save the UserProfile model instance.
+
             profile.save()
     
-            # Update our variable to tell the template registration was successful.
             registered = True
-    
-            # Invalid form or forms - mistakes or something else?
-            # #print problems to the terminal.
-            # They'll also be shown to the user.
+
         else:
             print user_form.errors, profile_form.errors
 
@@ -145,48 +124,27 @@ def register(request):
             context)
 
 def user_login(request):
-    #print request
-    
-    # Like before, obtain the context for the user's request.
     context = RequestContext(request)
-
-    # If the request is a HTTP POST, try to pull out the relevant information.
     if request.method == 'POST':
-        # Gather the username and password provided by the user.
-        # This information is obtained from the login form.
         username = request.POST['username']
         password = request.POST['password']
-
-        # Use Django's machinery to attempt to see if the username/password
-        # combination is valid - a User object is returned if it is.
         user = authenticate(username=username, password=password)
-
-        # If we have a User object, the details are correct.
-        # If None (Python's way of representing the absence of a value), no user
-        # with matching credentials was found.
         if user:
-            # Is the account active? It could have been disabled.
             if user.is_active:
-                # If the account is valid and active, we can log the user in.
-                # We'll send the user back to the homepage.
                 login(request, user)
                 return HttpResponseRedirect('/omckv2/')
             else:
-                # An inactive account was used - no logging in!
-                return HttpResponse("Your Rango account is disabled.")
+                notification = u'<h4 style="color:red">Username bị khóa</h4>'
+                #return HttpResponse("Your Rango account is disabled.")
         else:
-            # Bad login details were provided. So we can't log the user in.
-            #print "Invalid login details: {0}, {1}".format(username, password)
-            return HttpResponse("Invalid login details supplied.")
-
-    # The request is not a HTTP POST, so display the login form.
-    # This scenario would most likely be a HTTP GET.
+            #return HttpResponse("Invalid login details supplied.")
+            notification = u'<h4 style="color:red">Username hoặc password không đúng, hoặc user không tồn tại</h4>'
+            form = AuthenticationForm(request.GET)
     else:
-        # No context variables to pass to the template system, hence the
-        # blank dictionary object...
-        #return render_to_response('drivingtest/login.html', {}, context)
+        notification = u'<h4 style="color:green">Mời bạn login</h4>'
         form = AuthenticationForm(request)
-        return render_to_response('drivingtest/login.html', {'form':form}, context)
+    form.notification = notification
+    return render_to_response('drivingtest/login_ok.html', {'form':form}, context)    
 '''
 @sensitive_post_parameters()
 @csrf_protect
@@ -245,7 +203,7 @@ def user_logout(request):
 @csrf_protect
 @login_required
 def password_change(request,
-                    template_name='drivingtest/registration/password_change_form.html',
+                    template_name='drivingtest/registration/password_change_form_ok.html',
                     post_change_redirect=None,
                     password_change_form=PasswordChangeForm,
                     current_app=None, extra_context=None):
@@ -273,7 +231,7 @@ def password_change(request,
 
 @login_required
 def password_change_done(request,
-                         template_name='drivingtest/registration/password_change_done.html',
+                         template_name='drivingtest/registration/password_change_done_ok.html',
                          current_app=None, extra_context=None):
     context = {}
     #print '##########password_change_done'
@@ -406,9 +364,6 @@ def init(request):
 
 @login_required
 def omckv2(request):
-    #print 'request',request
-    #mllform = MllForm(instance = Mll.objects.latest('id'))
-    #now = timezone.now()
     tramform = TramForm()
     mllform = MllForm()
     commandform = LenhForm()
@@ -422,42 +377,18 @@ def omckv2(request):
     profile_instance = user.userprofile
     userprofileform = UserProfileForm(instance = profile_instance,khong_show_2_nut_cancel_va_loc=True )
     BCNOSS_form = BCNOSSForm()
-    '''
-    rt = annotation_for_thongkengaythang (BCNOSS.objects, ['day'])
-    tk_qs = rt[0]
-    ThongKeNgayThang_table= ThongKeNgayThangTable(tk_qs,is_groups =  ['day'])
-    ThongKeNgayThang_table.aggr = rt[1]
-    RequestConfig(request, paginate={"per_page": 10}).configure(ThongKeNgayThang_table)
-    '''
-    #print 'len(connection.queries)',len(connection.queries)
-    #print 'connection.queries',connection.queries
-    BCNOSS_table = BCNOSSTable(BCNOSS.objects.annotate(so_luong_tram_tinh_or_bsc_rnc=F('tinh__so_luong_tram_2G')))
     BCNOSS_table = BCNOSSTable(BCNOSS.objects.all().order_by('-id'))
     RequestConfig(request, paginate={"per_page": 15}).configure(BCNOSS_table) 
-    
-    
-    
     history_search_table = SearchHistoryTable(SearchHistory.objects.all().order_by('-search_datetime'), )
     RequestConfig(request, paginate={"per_page": 10}).configure(history_search_table)
     model_manager_form = ModelManagerForm()
-    
-    
-    #a = [x for x in thongkebcn_generator() ]
-    #print len(a)
-    '''
-    tktable = ThongKeTable(ApiDataset())
-    RequestConfig(request, paginate={"per_page": 15}).configure(tktable)
-    
-    tktable1 = ThongKeTable(ApiDataset(BTS_type = '2G'))
-    RequestConfig(request, paginate={"per_page": 15}).configure(tktable1) 
-    tktable2 = ThongKeTable(ApiDataset(MONTHLY_or_DAILY='DAILY'))
-    RequestConfig(request, paginate={"per_page": 15}).configure(tktable2)
-    
-    tktable3 = ThongKeTable(ApiDataset(BTS_type='2G', MONTHLY_or_DAILY='DAILY'))
-    RequestConfig(request, paginate={"per_page": 15}).configure(tktable3)  
-    '''
-    return render(request, 'drivingtest/omckv2.html',{'userprofileform':userprofileform,'BCNOSS_form':BCNOSS_form,'BCNOSS_table':BCNOSS_table,'tramtable':tramtable,'tramform':tramform,'mllform':mllform,'CHOICES':CHOICES,\
-            'commandform':commandform,'mlltable':mlltable,'lenhtable':lenhtable,'history_search_table':history_search_table,'model_manager_form':model_manager_form})
+    return render(request, 'drivingtest/omckv2.html',{'userprofileform':userprofileform,\
+                                                      'BCNOSS_form':BCNOSS_form,'BCNOSS_table':BCNOSS_table,\
+                                                      'tramtable':tramtable,'tramform':tramform,'mllform':mllform,\
+                                                      'commandform':commandform,\
+                                                      'mlltable':mlltable,'lenhtable':lenhtable,
+                                                      'history_search_table':history_search_table,
+                                                      'model_manager_form':model_manager_form})
 
 #URL  =  $.get('/omckv2/search_history/'
 # DELETE SOMETHING ON SURFACE AND C          
@@ -686,7 +617,7 @@ def modelmanager(request,modelmanager_name,entry_id):
             form = FormClass(initial = {'noi_dung_tin_nhan':noi_dung_tin_nhan,'group':group})
             form.modal_title_style = 'background-color:#337ab7'
             form.modal_prefix_title  = 'Nội Dung Nhắn Tin'
-            form_notification= u'<h2 class="form-notification text-primary">Nhấn nút copy, sẽ copy nội dung tn vào clipboard</h2>'
+            form_notification = u'<h2 class="form-notification text-primary">Nhấn nút copy, sẽ copy nội dung tn vào clipboard</h2>'
             dict_render = {'form':form,'form_notification':form_notification}
         else:
             
@@ -756,18 +687,16 @@ def modelmanager(request,modelmanager_name,entry_id):
                         #entry_id = urllib.unquote(entry_id).decode('utf8') 
                         instance = ModelOfForm_Class.objects.filter(**karg)[0]
                     except IndexError:
-                        form_notification = u'<h2 class="form-notification text-danger">khogn tim thay</h2>'
+                        form_notification = u'<h2 class="form-notification text-danger">Không tìm thấy yêu cầu get instance của bạn </h2>'
                         dict_render = {'form':None,'form_notification':form_notification}
                         status_code = 200
                         next_continue_handle_form = False
                 if request.method=="POST":# hoac la need_save_form
-                    print '@@@@@@@@@@@@@@@@@@@@@@@i wnat see'
                     print instance.id
-                    if 'is_delete' in request.POST and instance.nguoi_tao != request.user :
+                    if 'is_delete' in request.POST and (instance.nguoi_tao != request.user or request.user.is_superuser) :
                         dict_render.update({'info_for_alert_box':u'Bạn không có quyền xóa instance MLL or Comment của người khác'})
                         status_code = 403
                     elif  'is_delete' in request.POST:#instance.nguoi_tao == request.user
-                        #ModelOfForm_Class = FormClass.Meta.model # repeat same if loc
                         instance = ModelOfForm_Class.objects.get(id = entry_id)
                         delta = (timezone.now() - instance.ngay_gio_tao).seconds/60
                         set_allowed_delta_time = 12
@@ -782,7 +711,6 @@ def modelmanager(request,modelmanager_name,entry_id):
                                                 u'Hết thời gian để xóa instance nay vi no đã tạo được {0} giây, trong khi bạn chỉ được xóa trong vòng {1}\
                                                 '.format(str(delta),str(set_allowed_delta_time))})
                             status_code = 403
-                            #form_notification = u'<h2 class="form-notification text-warning">Het thoi gian xoa%s</h2>'%str(delta.seconds/60)
                     elif form_name=="CommentForm" and instance.nguoi_tao != request.user :
                         dict_render.update({'info_for_alert_box':u'Bạn không có quyền thay đổi comment của người khác'})
                         status_code = 403
@@ -796,13 +724,10 @@ def modelmanager(request,modelmanager_name,entry_id):
                         status_code = 400
                 if need_save_form and status_code ==200:
                     instance = form.save(commit=True)
-                    #update history edit
-                    print '@@@@@@@@@@@@@@form_name',form_name,entry_id
                     if ( entry_id !="new" and (form_name=="TramForm" or form_name == 'MllForm')):
                         print 'dang luu lich su edit'
                         update_edit_history(ModelOfForm_Class_name, instance, request)
-                    # update form notifcation only for normal form not for modal form
-                    #if form_table_template =='normal form template':
+
                     id_string =  str(instance.id)
                     if entry_id =="new":
                         form_notification = u'<h2 class="form-notification text-success">Bạn vừa tạo thành công 1 Đối tượng <span class="name-class-notification">%s</span> có ID là %s,bạn có thế tiếp tục edit nó</h2>'%(VERBOSE_CLASSNAME[ModelOfForm_Class_name],id_string)
@@ -812,7 +737,6 @@ def modelmanager(request,modelmanager_name,entry_id):
                     form = FormClass(instance = instance,request=request,khong_show_2_nut_cancel_va_loc=khong_show_2_nut_cancel_va_loc)###############3
                 #if not is_download_table:
                 if  status_code !=403:
-                    #form.update_action_and_button()        
                     dict_render = {'form':form,'form_notification':form_notification}
     #TABLE handle
     if is_download_table or(is_table  and status_code == 200):
@@ -857,7 +781,6 @@ def modelmanager(request,modelmanager_name,entry_id):
             table_notification = u'<h2 class="table_notification">Tất cả  đối tượng trong  <span class="name-class-notification">%s</span> được hiển thị ở table bên dưới</h2>'%(ModelofTable_Class_name)
             #per_page = 3
         elif 'tramid' in request.GET:
-            #print '@@@@@@@@@@@@@@@@ndt2'
             if table_name =='TramTable':
                 querysets =[]
                 tram_object = ModelofTable_Class.objects.get(id=request.GET['tramid'])
@@ -966,11 +889,9 @@ def modelmanager(request,modelmanager_name,entry_id):
                 FiterClass=FilterToGenerateQ_ForBCNOSSForm
             else:
                 FiterClass= FilterToGenerateQ
-            #print '@@@@@form.cleaned_data',form_for_loc.cleaned_data
             qgroup_instance= FiterClass(request,FormClass_for_loc,ModelofTable_Class,form_for_loc.cleaned_data)
             qgroup = qgroup_instance.generateQgroup()
             
-            #if (table_name=='ThongKeNgayThangTable') :
             if modelmanager_name == 'BCNOSSForm':
                 is_include_code_8 = form_for_loc.cleaned_data['is_include_code_4_7_8']
                 if is_include_code_8:
@@ -981,7 +902,7 @@ def modelmanager(request,modelmanager_name,entry_id):
             else:
                 querysets = ModelofTable_Class.objects.filter(qgroup).distinct().order_by('-id')
             if loc_pass_agrument:#loc bang nut loc co tra ve form va table
-                form_notification =u'<h2 class="form-notification text-info">  Số kết quả lọc là <span class="soluong-notif">%s</span> trong database <span class="name-class-notification">%s</span> <h2>'%(len(querysets),VERBOSE_CLASSNAME[ModelofTable_Class_name])
+                form_notification = u'<h2 class="form-notification text-info">  Số kết quả lọc là <span class="soluong-notif">%s</span> trong database <span class="name-class-notification">%s</span> <h2>'%(len(querysets),VERBOSE_CLASSNAME[ModelofTable_Class_name])
                 dict_render.update({'form_notification':form_notification})
             loc_query = loc_query_for_table_notification(form_for_loc,request)
             table_notification = u'<h2 class="table_notification"> Số kết quả lọc là <span class="soluong-notif">%s</span> query tìm <span class="query-tim">"%s"</span> trong database <span class="name-class-notification">%s</span>  được hiển thị ở table bên dưới</h2>'%(len(querysets),loc_query,VERBOSE_CLASSNAME[ModelofTable_Class_name])
@@ -992,10 +913,14 @@ def modelmanager(request,modelmanager_name,entry_id):
             querysets = ModelofTable_Class.objects.all().order_by('-id')
             table_notification = u'<h2 class="table_notification">Tất cả  đối tượng <span class="soluong-notif">(%s)</span> trong database <span class="name-class-notification">%s</span> được hiển thị ở table bên dưới</h2>'%(len(querysets),VERBOSE_CLASSNAME[ModelofTable_Class_name])
         if table_name=='MllTable':
-            loc_cas = request.GET['loc_ca']
-            if loc_cas and loc_cas !="None":
-                q = reduce(operator.or_, (Q(ca_truc__id = ca_name) for ca_name in loc_cas.split('d4') ))
-                querysets = querysets.filter(q)
+            try:
+                loc_cas = request.GET['loc_ca']
+                if loc_cas and loc_cas !="None":
+                    q = reduce(operator.or_, (Q(ca_truc__id = ca_name) for ca_name in loc_cas.split('d4') ))
+                    querysets = querysets.filter(q)
+            except MultiValueDictKeyError:
+                pass
+                
         elif table_name=='ThongKeNgayThangTable':
             rt = annotation_for_thongkengaythang (querysets,is_groups,is_include_code_8 = is_include_code_8)
             querysets = rt[0]
@@ -1036,6 +961,16 @@ def modelmanager(request,modelmanager_name,entry_id):
             pattern = 'drivingtest/form_table_manager_for_modal.html'
         else:
             pattern ='drivingtest/form_table_manager.html'
+        #dict_render['form_notification'] =    u'<h3>%s</h3>'%(u'<span class="notification-datetime">%s</span> '%(datetime.now().strftime(D4_DATETIME_FORMAT)) + dict_render['form_notification'])
+        try:
+            dict_render['form_notification'] =    u'<div class="form-notifcation-wrapper-div">%s</div>'%(u'<div class="now-notification-div">%s   </div>'%(datetime.now().strftime(D4_DATETIME_FORMAT)) + u'<div class="form-notifcation-div">%s</div>'%dict_render['form_notification'])
+        except KeyError:
+            pass
+        try:    
+            dict_render['table_notification'] =    u'<div class="table-notifcation-wrapper-div">%s</div>'%(u'<div class="now-notification-div">%s   </div>'%(datetime.now().strftime(D4_DATETIME_FORMAT)) + u'<div class="form-notifcation-div">%s</div>'%dict_render['table_notification'])
+        except KeyError:
+            pass
+            
         return render(request, pattern,dict_render,status=status_code)
             
 

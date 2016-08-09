@@ -1,15 +1,17 @@
 {% spaceless %}
 {% load django_tables2 %}
-{% load getattribute %}
 {% load i18n %}
 {% if table.page %}
 <div class="table-container">
 {% endif %}
 
+
+
 {% block table %}
 <table{% if table.attrs %} {{ table.attrs.as_html }}{% endif %}>
     {% nospaceless %}
     {% block table.thead %}
+   
     <thead>
 
         <tr>
@@ -22,19 +24,17 @@
             {% else %}
 
             <th {{ column.attrs.th.as_html }}>{{ column.header }}</th>
-            
+            <div>
             {% endif %}
         {% endfor %}
         </tr>
     </thead>
     {% endblock table.thead %}
-    
     {% block table.tbody %}
     <tbody>
         {% for row in table.page.object_list|default:table.rows %} {# support pagination #}
         {% block table.tbody.row %}
         <tr class="{{ forloop.counter|divisibleby:2|yesno:"even,odd" }}"> {# avoid cycle for Django 1.2-1.6 compatibility #}
-            
             {% for column, cell in row.items %}
                 <td {{ column.attrs.td.as_html }}
                 {% with column.attrs.td.class|stringformat:"s" as classvalue %}
@@ -54,8 +54,6 @@
         {% endfor %}
     </tbody>
     {% endblock table.tbody %}
-
-    
     {% block table.tfoot %}
     <tfoot></tfoot>
     {% endblock table.tfoot %}
@@ -63,21 +61,15 @@
 </table>
 {% endblock table %}
 
-
-
-
 {% if table.page %}
 {% with table.page.paginator.count as total %}
 {% with table.page.paginator.num_pages as thelastone %}
 {% with table.page.object_list|length as count %}
-
 {% block pagination %}
-<div class = "col-sm-6 paginationd4">
+<div class = "col-sm-6">
 <ul class="pagination">
 {% nospaceless %}{% block pagination.first %}<li class="first"><a href="{{table.jquery_url}}{% querystring table.prefixed_page_field=1 %}" onclick="{% if table.page.has_previous %}return true{% else %}return false{% endif %}" style="padding-bottom:12px" class="searchtable_header_sort"><span class="glyphicon glyphicon-chevron-left" ></span><span class="glyphicon glyphicon-chevron-left"></span></a></li>{% endblock pagination.first %}{% endnospaceless %}
-
     {% nospaceless %}{% block pagination.previous %}<li class="previous"><a href="{{table.jquery_url}}{% if table.page.has_previous %}{% querystring table.prefixed_page_field=table.page.previous_page_number %}{% endif %}" onclick="{% if table.page.has_previous %}return true{% else %}return false{% endif %}" style="padding-bottom:12px" class="searchtable_header_sort"><span class="glyphicon glyphicon-chevron-left"></span></a></li>{% endblock pagination.previous %}{% endnospaceless %}
-
 {% nospaceless %}
 {% block pagination.current %}
 
@@ -92,47 +84,38 @@
         {% endifequal %}
     {% endif %}
 {% endfor%}
-
 {% endblock pagination.current %}
 {% endnospaceless %}
-
-
-
     {% nospaceless %}{% block pagination.next %}<li class="next"><a href="{{table.jquery_url}}{% if table.page.has_next %}{% querystring table.prefixed_page_field=table.page.next_page_number %}{% endif %}" style="padding-bottom:12px" onclick="{% if table.page.has_next %}return true{% else %}return false{% endif %}" class="searchtable_header_sort"><span class="glyphicon glyphicon-chevron-right"></span></a></li>{% endblock pagination.next %}{% endnospaceless %}
-
     {% nospaceless %}{% block pagination.last %}<li class="last"><a href="{{table.jquery_url}}{% querystring table.prefixed_page_field=thelastone %}" style="border-top-right-radius:4px;border-bottom-right-radius:4px;padding-bottom:12px" onclick="{% if table.page.has_next %}return true{% else %}return false{% endif %}" class="searchtable_header_sort"><span class="glyphicon glyphicon-chevron-right"></span><span class="glyphicon glyphicon-chevron-right"></span></a></li>{% endblock pagination.last %}{% endnospaceless %}
-
     {% nospaceless %}{% block pagination.cardinality %}<li class="cardinality">{% if total != count %}{% blocktrans %}{{ count }} / {{ total }}{% endblocktrans %}{% else %}{{ total }}{% endif %} {% if total == 1 %}{{ table.data.verbose_name }}{% else %}{{ table.data.verbose_name_plural }}{% endif %}</li>{% endblock pagination.cardinality %}{% endnospaceless %}
-
 </ul>
-</div> <!--paginationd4-->
+</div>
+<div class = "col-sm-6" >
+{%if table.is_show_download_link%}
+    <div style ="float: right;">
+<a href="{{table.jquery_url}}?download=yes&{% querystring table.prefixed_order_by_field=column.order_by_alias.next %}" class="btn  btn-default " >Download this table</a>
+
+</div>
+{%endif%}
+{% block table.report %}
+        {%if table.is_report_download%}
+        <a href="{{table.jquery_url}}{% querystring table.param_report_d4=table.param_report_d4_yes %}&downloadtable=csv">
+                    <img src="{{ STATIC_URL }}img/csv_icon.png" title="{{ label }}"/>
+                </a>
+        <a href="{{table.jquery_url}}{% querystring table.param_report_d4=table.param_report_d4_yes %}&downloadtable=xls">
+                    <img src="{{ STATIC_URL }}img/xls_icon.png" title="{{ label }}"/>
+                </a>
+            {%endif%}
+    {% endblock table.report %}
+</div>
 {% endblock pagination %}
 {% endwith %}
 {% endwith %}
 {% endwith %}
-    {% block table.report %}
-        {%if table.is_report_download%}
-        <div class = "col-sm-6" >
-        <a href="{{table.jquery_url}}{% querystring "downloadtable"="xls" %}">
-                    <img src="{{ STATIC_URL }}img/csv_icon.png" title="{{ label }}"/>
-                </a>
-        <a href="{{table.jquery_url}}{% querystring "downloadtable"="xls" %}">
-                    <img src="{{ STATIC_URL }}img/xls_icon.png" title="{{ label }}"/>
-                </a>
-            </div>
-        {%endif%}
-    {% endblock table.report %}
-
-{% endif %} <!--end if table.page -->
-
-
-
-
-
-
-
-
-
+{% else%}
+<p><h3>Table này không có record nào</h3></p>
+{% endif %}
 {% if table.page %}
 </div>
 {% endif %}

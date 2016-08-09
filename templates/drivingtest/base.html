@@ -11,17 +11,16 @@
       <link href="{% static 'css/jquery-ui.css'%}" rel="stylesheet">
       <link href="{% static 'css/jquery-ui.theme.css'%}" rel="stylesheet">
       <link href="{% static 'timepick/bootstrap-datetimepicker.css'%}" rel="stylesheet">
-      <!--<link href="{% static 'css/screen.css'%}" rel="stylesheet">-->
       <link href="{% static 'css/pnotify.custom.min.css'%}" rel="stylesheet">
       <link href="{% static 'css/select2.min.css'%}" rel="stylesheet">
       <link href="{% static 'css/defaultTheme_fixheader.css'%}" rel="stylesheet">
-      <!--<link href="{% static 'css/colResizable.css'%}" rel="stylesheet">-->
       <link href="{% static 'css/bootstrap-fluid-adj.css'%}" rel="stylesheet">
       <link rel="icon" type="image/vnd.microsoft.icon"
          href="{{last_OwnContact.icon_path}}" />
       <style type="text/css">
       </style>
       <title>{% block title %}{{last_OwnContact.base_title}}{% endblock %}</title>
+   </head>
    <body>
       <header>
          <div class = "main-nav">
@@ -51,13 +50,13 @@
          <!--end .main-nav -->
          <!-- greet chao hoi -->
          <div class="container" style = "margin-top:10px">
+            {% if user.is_authenticated %}
             <div class="alert alert-info" style="margin-bottom:0px">
-               <strong>hello {{ user.username }}!</strong> <span id = "ca-dang-truc" style="color:red">Ca {{ user.userprofile.ca_truc }}</span>
+               Hello <strong><span style="color:green">{{ user.username }}!</span></strong> Ca <span id = "ca-dang-truc" style="color:red">{{ user.userprofile.ca_truc }}</span>
             </div>
+            {%endif%}
          </div>
-         <!--container-->
       </header>
-      <!--Slieder here-->
       <section class="content" style = "padding:20px;">
          {%block body_block%}
          {%endblock%}
@@ -76,20 +75,15 @@
          </div>
       </footer>
    </body>
-      <script src="{% static 'js/jquery-2.1.4.js'%}"></script>
-      <script src="{% static 'js/bootstrap.min.js' %}"></script>
-      <script src="{% static 'js/jquery-ui.js' %}"></script>
-      <script src="{% static 'timepick/moment-with-locales.js' %}"></script>
-      <script src="{% static 'timepick/bootstrap-datetimepicker.js' %}"></script>
-      <script src="{% static 'js/bootbox.min.js' %}"></script>
-      <script src="{% static 'js/pnotify.custom.min.js' %}"></script>
-      <script src="{% static 'js/select2.min.js' %}"></script>
-      <script src="{% static 'js/colResizable-1.5.min.js' %}"></script>
-      <!--<script src="{% static 'js/jquery.fixedheadertable.js' %}"></script>
-         <script src="http://maps.googleapis.com/maps/api/js"></script>
-         -->
-      <script src="{% static 'js/learndriving.js' %}"></script>
-      <script type="text/javascript" src="{% static "ckeditor/ckeditor/ckeditor.js" %}"></script>
-      <script type="text/javascript" src="{% static "ckeditor/ckeditor-init.js" %}"></script>
-      <script type="text/javascript"></script>
+   <script src="{% static 'js/jquery-2.1.4.js'%}"></script>
+   <script src="{% static 'js/bootstrap.min.js' %}"></script>
+   <script src="{% static 'js/jquery-ui.js' %}"></script>
+   <script src="{% static 'timepick/moment-with-locales.js' %}"></script>
+   <script src="{% static 'timepick/bootstrap-datetimepicker.js' %}"></script>
+   <script src="{% static 'js/bootbox.min.js' %}"></script>
+   <script src="{% static 'js/pnotify.custom.min.js' %}"></script>
+   <script src="{% static 'js/select2.min.js' %}"></script>
+   <script src="{% static 'js/colResizable-1.5.min.js' %}"></script>
+   <script src="{% static 'js/learndriving.js' %}"></script>
+   <script type="text/javascript"></script>
 </html>

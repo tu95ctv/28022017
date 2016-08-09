@@ -392,9 +392,11 @@ $(document).ready(function() {
 
                 console.log('##after add edit_reason', url)
             type = "POST"
+            /*
             for (instance in CKEDITOR.instances) {
                 CKEDITOR.instances[instance].updateElement();
             }
+            */
             data = $(this).closest('form').serialize()
 
         } else {
@@ -604,11 +606,11 @@ $(document).ready(function() {
             },
             error: function(request, status, error) {
                 console.log('bi loi 400 hoac 403',error)
-                if (error == 'Forbidden') { //403
+                if (error == 'FORBIDDEN') { //403
                     console.log(request.responseText)
                     data = $(request.responseText).find('#info_for_alert_box').html()
                     alert(data);
-                } else if (error == 'Bad Request') {
+                } else if (error == 'BAD REQUEST') {
                     console.log('bi loi 403')
                     formdata = $(request.responseText).find('.form-manager_r').html()
                     console.log('formdata',formdata)

@@ -5,18 +5,10 @@ from django.utils import timezone
 print 'in model 2'
 from django.db import models
 from django.contrib.auth.models import User
-
-#from drivingtest.forms import D4_DATETIME_FORMAT
-D4_DATETIME_FORMAT = '%H:%M %d/%m/%Y'
         ##OMCKV2
 class IPAddress_FieldNullable(models.GenericIPAddressField):
     def get_db_prep_save(self,value,connection,prepared=False):
         return value or None   
-
-
-
-
-    
 class EditHistory(models.Model):
     modal_name = models.CharField(max_length=50)
     edited_object_id = models.IntegerField()

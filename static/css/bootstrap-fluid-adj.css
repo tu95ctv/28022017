@@ -659,27 +659,36 @@ table.tram-table > thead > tr> th.id {
 	width:5000px;
 }
 */
-
-.form-notification {
+.notification-datetime {font-size: 21px;}
+.form-notification ,.table_notification{
 	font-size: 21px;
-	text-align: center;
+	display: inline;
 }
 
-.form-notification:before {
+.form-notifcation-wrapper-div:before {
+	font-size: 21px;
 	content:"Thông báo của form: ";
 	color: #999900;
 }
-.table_notification {
-	text-align: center;
-}
 
-.table_notification:before {
+
+.table-notifcation-wrapper-div:before {
+	font-size: 21px;
 	content:"Thông báo của Table: ";
 	color:#333;
 }
+
+.now-notification-div {
+	display:inline;
+}
+.form-notifcation-div {
+	display:inline;
+}
+div.form-notifcation-wrapper-div,div.table-notifcation-wrapper-div {
+	text-align: center
+}
 .textarea{resize: both;}
 #mll-form-table-wrapper input.btn {
-
     margin: 20px ; 
     position:relative;
     left:40%;
@@ -752,7 +761,7 @@ table.table-bordered thead th.desc { background: url('/media/images/sort_desc.pn
   .table-bordered>thead>tr>th {
   	text-align: center;
   }
- table#tram-table-id  { 
+ table#tram-table-id  tbody tr{ 
  	
  	
  }
