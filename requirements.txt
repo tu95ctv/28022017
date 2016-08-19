@@ -6,6 +6,9 @@ channels==0.14.2
 daphne==0.12.1
 Django==1.8.3
 django-crispy-forms==1.6.0
+django-tables2==1.2.5
+django-tables2-reports==0.0.10
+gunicorn==19.4.5
 html2bbcode==2.3.2
 Pillow==2.9.0
 psycopg2==2.6.1
@@ -17,6 +20,7 @@ six==1.10.0
 Twisted==16.2.0
 txaio==2.5.1
 Unidecode==0.4.18
+whitenoise==2.0.6
 xlrd==0.9.3
 xlwt==1.0.0
 zope.interface==4.2.0
