@@ -223,3 +223,4 @@ MYD4_LOOKED_FIELD1 = {'site_name_1':'SN1', 'site_name_2':'SN2','site_ID_2G':'2G'
 FORMAT_TIME = '%H:%M %d-%m-%Y'
 
 AUTH_PROFILE_MODULE = "rnoc.UserProfile"
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
