@@ -1,19 +1,13 @@
 # Django settings for LearnDriving project.
 import os
-print 'in setting 1'
 SETTINGS_DIR = os.path.dirname(__file__)
-
-print SETTINGS_DIR
 PROJECT_PATH1 = os.path.join(SETTINGS_DIR, os.pardir)
-print 'PROJECT_PATH1',PROJECT_PATH1
-
 PROJECT_PATH = os.path.abspath(PROJECT_PATH1)
 
 
 TEMPLATE_PATH = os.path.join(PROJECT_PATH, 'templates')
-print TEMPLATE_PATH
 STATIC_PATH = os.path.join(PROJECT_PATH,'static')
-print STATIC_PATH
+STATIC_ROOT = os.path.join(PROJECT_PATH, 'staticfiles')
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
