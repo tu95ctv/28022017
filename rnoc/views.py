@@ -63,13 +63,12 @@ from rnoc.forms import UserForm, UserProfileForm,\
     VERBOSE_CLASSNAME, BCNOSSForm, BCNOSSTable, D4_DATETIME_FORMAT
 import models
 import forms#cai nay quan trong khong duoc xoa
-
-ship = (("Site_ID_2G",'2G'),
+ICONTAINS_OR_IREGEX =  'iregex'  
+MYD4_LOOKED_FIELD = collections.OrderedDict((("Site_ID_2G",'2G'),
         ("Site_ID_3G",'3G'),
         ("eNodeB_Name","4G"),
         ("Site_Name_1", "SN1"),
-        ("Site_Name_2", 'SN2'))
-MYD4_LOOKED_FIELD = collections.OrderedDict(ship)
+        ("Site_Name_2", 'SN2')))
 SHORT_DATETIME_FORMAT = "Y-m-d H:i"
 ################CHUNG######################
 def register(request):
@@ -391,7 +390,8 @@ def omckv2(request):
                                                       'model_manager_form':model_manager_form})
 
 #URL  =  $.get('/omckv2/search_history/'
-# DELETE SOMETHING ON SURFACE AND C          
+# DELETE SOMETHING ON SURFACE AND C   
+    
 class FilterToGenerateQ():
     No_AUTO_FILTER_FIELDS=[]
     def __init__(self,request,FormClass,ModelClass,form_cleaned_data):
@@ -419,7 +419,8 @@ class FilterToGenerateQ():
                 elif self.form_cleaned_data[f.name]==u'!':
                     qgroup &= Q(**{'%s__isnull'%f.name:True}) | Q(**{'%s__exact'%f.name:''})
                 else:
-                    qgroup &=Q(**{'%s__icontains'%f.name:self.form_cleaned_data[f.name]})
+                    qgroup &=Q(**{'%s__iregex'%(f.name):self.form_cleaned_data[f.name]})
+                    print {'%s__iregex'%(f.name):self.form_cleaned_data[f.name]}
             elif isinstance(f,DateTimeField) or  isinstance(f,DateField) or  isinstance(f,AutoField):
                 pass
             else:
@@ -824,7 +825,7 @@ def modelmanager(request,modelmanager_name,entry_id):
                 if fieldnameKey=="all field":
                         FNAME = [f.name for f in ModelofTable_Class._meta.fields if isinstance(f, CharField)]
                         #print 'FNAME',FNAME
-                        qgroup = reduce(operator.or_, (Q(**{"%s__icontains" % fieldname: contain}) for fieldname in FNAME ))
+                        qgroup = reduce(operator.or_, (Q(**{"%s__%s" %(fieldname,ICONTAINS_OR_IREGEX): contain}) for fieldname in FNAME ))
                         
                         FRNAME = [f.name for f in ModelofTable_Class._meta.fields if (isinstance(f, ForeignKey) or isinstance(f, ManyToManyField) )and f.rel.to !=User]
                         #print 'FRNAME',FRNAME
@@ -832,11 +833,11 @@ def modelmanager(request,modelmanager_name,entry_id):
                         #print 'Many2manyfields',Many2manyfields
                         FRNAME  = FRNAME + Many2manyfields
                         if FRNAME:
-                            qgroup_FRNAME = reduce(operator.or_, (Q(**{"%s__Name__icontains" % fieldname: contain}) for fieldname in FRNAME ))
+                            qgroup_FRNAME = reduce(operator.or_, (Q(**{"%s__Name__%s" %(fieldname,ICONTAINS_OR_IREGEX): contain}) for fieldname in FRNAME ))
                             qgroup = qgroup | qgroup_FRNAME
                        
                 else:
-                    qgroup = Q(**{"%s__icontains" % fieldnameKey: contain})
+                    qgroup = Q(**{"%s__%s" %(fieldnameKey,ICONTAINS_OR_IREGEX): contain})
                 if not fname_contain_reconize_tuple[2]:#neu khong query phu dinh
                     kq_searchs_one_contain = ModelofTable_Class.objects.filter(qgroup)
                 else:
@@ -955,7 +956,7 @@ def modelmanager(request,modelmanager_name,entry_id):
         elif request.GET['downloadtable'] == 'xls':
             return table.as_xls_d4_in_form_py_xls(request)
     else:
-        if form_table_template =='form on modal' and is_form :# and not click order-sort
+        if form_table_template =='form_on_modal' and is_form :# and not click order-sort
             if form:
                 form.verbose_form_name =VERBOSE_CLASSNAME.get(ModelOfForm_Class_name,ModelOfForm_Class_name)
             pattern = 'drivingtest/form_table_manager_for_modal.html'
@@ -1044,27 +1045,24 @@ from django.template import Template
 
 
 
-AUTOCOMPLETE_DICT = {'nguyen_nhan':{'class_name':'NguyenNhan','is_dau_hieu_co_add':True},\
-                     'du_an':{'class_name':'DuAn','is_dau_hieu_co_add':True},\
-                     'su_co':{'class_name':'SuCo','is_dau_hieu_co_add':True},\
-                     #'thiet_bi':{'class_name':'ThietBi','is_dau_hieu_co_add':True},\
-                     'trang_thai':{'class_name':'TrangThai','is_dau_hieu_co_add':True},\
-                     'tinh':{'class_name':'Tinh','is_dau_hieu_co_add':False},\
-                     'quan_huyen':{'class_name':'QuanHuyen','is_dau_hieu_co_add':False},\
+ICON_AUTOCOMPLETE_DICT = {'nguyen_nhan':{'class_name':'NguyenNhan','is_admin_allow_dau_hieu_co_add':True},\
+                     'du_an':{'class_name':'DuAn','is_admin_allow_dau_hieu_co_add':True},\
+                     'su_co':{'class_name':'SuCo','is_admin_allow_dau_hieu_co_add':True},\
+                     'trang_thai':{'class_name':'TrangThai','is_admin_allow_dau_hieu_co_add':True},\
+                     'tinh':{'class_name':'Tinh','is_admin_allow_dau_hieu_co_add':False},\
+                     'quan_huyen':{'class_name':'QuanHuyen','is_admin_allow_dau_hieu_co_add':False},\
                      }
 def autocomplete (request):
     query   = request.GET['query'].lstrip().rstrip()
-    #print 'ban dang search',query
     name_attr = request.GET['name_attr']
     results = [] # results la 1 list gom nhieu dict, moi dict la moi li , moi dict la moi ket qua tim kiem
 
-    if name_attr in AUTOCOMPLETE_DICT:
-        class_name = AUTOCOMPLETE_DICT[name_attr]['class_name']
-        print 'class_name@@@@@@@@@@',class_name
+    if name_attr in ICON_AUTOCOMPLETE_DICT:
+        class_name = ICON_AUTOCOMPLETE_DICT[name_attr]['class_name']
         Classeq = eval('models.' + class_name.replace(' ',''))#repeat same if loc
         if query == 'tatca':
             autocomplete_qs = Classeq.objects.all()
-            is_dau_hieu_co_add = False
+            is_admin_allow_dau_hieu_co_add = False
             href_id = None
         else:
             fieldnames = [f.name for f in Classeq._meta.fields if isinstance(f, CharField)  ]
@@ -1079,8 +1077,8 @@ def autocomplete (request):
         to_json = {
             "key_for_list_of_item_dict": results,
         }
-        is_dau_hieu_co_add = AUTOCOMPLETE_DICT[name_attr].get('is_dau_hieu_co_add',False)
-        if is_dau_hieu_co_add:
+        is_admin_allow_dau_hieu_co_add = ICON_AUTOCOMPLETE_DICT[name_attr].get('is_admin_allow_dau_hieu_co_add',False)
+        if is_admin_allow_dau_hieu_co_add:
             try:
                 instance = Classeq.objects.get(Name=query)
                 dau_hieu_co_add = False
@@ -1104,9 +1102,6 @@ def autocomplete (request):
                 gach_index = query.find('*')
                 thietbi_name = query[:gach_index].lstrip().rstrip()
                 bts_type_name = query[gach_index +1:].lstrip().rstrip()
-            #qgroup = reduce(operator.or_, (Q(**{"%s__icontains" % fieldname: thietbi_name}) for fieldname in fieldnames ))
-            #autocomplete_thietbi = ThietBi.objects.filter(qgroup)
-            #qgroup_bts_type = Q(bts_type__Name__icontains = bts_type_name )
             karg = {'Name__icontains':thietbi_name}
             if bts_type_name:
                 karg.update({'bts_type__Name__icontains':bts_type_name})  
@@ -1213,12 +1208,6 @@ def autocomplete (request):
             "key_for_list_of_item_dict": results,
         }
         to_json.update({'dau_hieu_co_add':dau_hieu_co_add,'href_id':href_id})
-                
-                
-                
-                
-                
-                
     elif name_attr =='thao_tac_lien_quan':
         if query == 'tatca':
             autocomplete_qs = ThaoTacLienQuan.objects.all()
@@ -1245,7 +1234,6 @@ def autocomplete (request):
         else:
             dau_hieu_co_add_so_luong = 0
             last_add_item = ''
-            
             for count,query in enumerate(querys):
                 query = query.rstrip().lstrip()
                 if query=="":#tatca
@@ -1264,13 +1252,14 @@ def autocomplete (request):
                 else:
                     href_id = "new"
         to_json.update({'dau_hieu_co_add':dau_hieu_co_add_so_luong,'href_id':href_id,'last_add_item':last_add_item})
-        
-        
     elif name_attr =='manager_suggestion':
         modelClass = eval('models.'+request.GET['model_attr_global'])
-        fieldnames = [f.name for f in modelClass._meta.fields if isinstance(f, CharField)  ]
-        qgroup = reduce(operator.or_, (Q(**{"%s__icontains" % fieldname: query}) for fieldname in fieldnames ))
-        querys = modelClass.objects.filter(qgroup)
+        if query=='tatca':
+            querys = modelClass.objects.all()
+        else:
+            fieldnames = [f.name for f in modelClass._meta.fields if isinstance(f, CharField)  ]
+            qgroup = reduce(operator.or_, (Q(**{"%s__icontains" % fieldname: query}) for fieldname in fieldnames ))
+            querys = modelClass.objects.filter(qgroup)
         for object in querys[:10]:
             object_dict = {}
             object_dict['label'] = object.__unicode__()
@@ -1295,7 +1284,10 @@ def autocomplete (request):
     
     elif name_attr =='object' or name_attr =="main_suggestion":
         contain = query
-        if contain =='':
+        if contain =='tatca':
+            fieldnames = MYD4_LOOKED_FIELD
+            contain = 'a'
+        elif contain =='':
             fieldnames = {'Site_ID_3G':'3G'}
         else:
             fieldnames = MYD4_LOOKED_FIELD

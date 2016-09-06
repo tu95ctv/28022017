@@ -1,34 +1,37 @@
-
-var modelClassDict = { "su_co":"SuCo", "trang_thai": "TrangThai","nguyen_nhan":"NguyenNhan","thiet_bi":"ThietBi",
-                        "thao_tac_lien_quan":"ThaoTacLienQuan","doi_tac":"DoiTac","du_an":"DuAn"};
+var modelClassDict = {
+    "su_co": "SuCo",
+    "trang_thai": "TrangThai",
+    "nguyen_nhan": "NguyenNhan",
+    "thiet_bi": "ThietBi",
+    "thao_tac_lien_quan": "ThaoTacLienQuan",
+    "doi_tac": "DoiTac",
+    "du_an": "DuAn"
+};
 var last_add_item
 
 $(document).ready(function() {
     var option_khong_tu_dong_search_tram
 
     option_khong_tu_dong_search_tram = $('input#id_khong_search_tu_dong_tram').prop('checked')
-    //.show-form-modal
+        //.show-form-modal
     $(this).on('click', '#mll-form-table-wrapper span.input-group-addon,#modal-on-mll-tables span.input-group-addon,a.manager-a-form-select-link,select#id_chon_loai_de_quan_ly,.edit-entry-btn-on-table,form#model-manager input[type=submit],.show-modal-form-link,a.show-modal-form-link_allow_edit,a.searchtable_header_sort,.search-botton,.search-manager-botton', form_table_handle)
 
 
     function form_table_handle(e, intended_for, abitrary_url, sort_field) {
         console.log("okkkkkkkkkkkkkkkkk first")
         class_value = $(this).attr("class")
-        loai_ajax = "normal"
         is_no_show_return_form = false
             //is_both_table = "both form and table"
         is_table = true
         is_form = true
-        form_table_template = "normal form template" //'form on modal'
+        form_table_template = "normal form template" //'form_on_modal'
         hieu_ung_sau_load_form_va_table = "khong hieu ung"
         closest_wrapper = $(this).closest('div.form-table-wrapper')
         id_closest_wrapper = closest_wrapper.attr('id') // no importaince
-        console.log('id_closest_wrapper', id_closest_wrapper)
         var table_object
         is_get_table_request_get_parameter = false
             //table_name = '' // table_name dung de xac dinh table , sau khi submit form o modal se hien thi o day, trong truong hop force_allow_edit thi table_name attr se bi xoa 
         if (intended_for == 'intended_for_autocomplete') {
-            //is_both_table = "both form and table"
             is_table = true
             is_form = true
             closest_wrapper = $('#form-table-of-tram-info')
@@ -69,33 +72,39 @@ $(document).ready(function() {
             data = {}
 
 
-        //@@@@@@@@@@@@@@@
-        }else if (class_value.indexOf('input-group-addon') > -1) {
+            //@@@@@@@@@@@@@@@
+        } else if (class_value.indexOf('input-group-addon') > -1) {
             dtuong_before_submit = $(this)
-            console.log('dtuong_before_submit',dtuong_before_submit.attr('class'))
+            find_glyphicon_calendar = $(this).find('.glyphicon-calendar')
+            if (find_glyphicon_calendar.length > 0) {
+                return true
+            }
+            console.log('dtuong_before_submit', dtuong_before_submit.attr('class'))
             href_id = $(this).find('span.glyphicon').attr("href_id")
             near_input = $(this).closest('.input-group').find('input[type=text]')
             near_input_value = near_input.val()
+            console.log('near_input_value 1', near_input_value)
             if (typeof href_id === "undefined") {
-                if (near_input_value==''){
-                href_id = "new"}
-                else {
+                console.log('near_input_value 2', near_input_value)
+                if (near_input_value == '') {
+                    href_id = "new"
+                } else {
                     href_id = near_input_value
+                    console.log('near_input_value 3', near_input_value)
                 }
             }
-            name = modelClassDict[near_input.attr("name")]+'Form'
-            url = "/omckv2/modelmanager/" + name + "/"+href_id + "/"
+            name = modelClassDict[near_input.attr("name")] + 'Form'
+            url = "/omckv2/modelmanager/" + name + "/" + href_id + "/"
             is_table = false
             if (href_id == 'new') {
-                if (name_attr_global=='thao_tac_lien_quan'){
-                    input_text_to_Name_field =  last_add_item
+                if (name_attr_global == 'thao_tac_lien_quan') {
+                    input_text_to_Name_field = last_add_item
+                } else {
+                    input_text_to_Name_field = near_input.val()
                 }
-                else {
-                input_text_to_Name_field = near_input.val()
-            }
                 hieu_ung_sau_load_form_va_table = 'input text to Name field'
             }
-            form_table_template = 'form on modal'
+            form_table_template = 'form_on_modal'
             closest_table_name = closest_wrapper.find('table').attr('name')
 
             if (closest_table_name && href_id != 'new') {
@@ -103,13 +112,11 @@ $(document).ready(function() {
             } else {
                 $('#modal-on-mll-table').removeAttr('table_name')
             }
-            
+
             type = "GET"
             data = {}
 
-            }
-            
-        else if (class_value.indexOf('search-botton') > -1) {
+        } else if (class_value.indexOf('search-botton') > -1) {
             var query;
             query = $('#text-search-input').val();
             url = "/omckv2/modelmanager/TramForm/new/"
@@ -199,7 +206,6 @@ $(document).ready(function() {
             is_table = true
             is_form = true
             url = $(this).attr('href')
-            console.log('@@@@@@@@@@ndt', url)
             type = "GET"
             data = {}
             hieu_ung_sau_load_form_va_table = "show search box 2"
@@ -207,7 +213,7 @@ $(document).ready(function() {
         } else if (class_value.indexOf('show-modal-form-link') > -1) {
             is_table = false
             url = $(this).attr("href") ///omckv2/show-modal-form-link/ThietBiForm/1/
-            form_table_template = 'form on modal'
+            form_table_template = 'form_on_modal'
             table_name = $(this).closest('table').attr('name')
             if (table_name) {
                 $('#modal-on-mll-table').attr('table_name', table_name)
@@ -251,9 +257,7 @@ $(document).ready(function() {
 
 
 
-
-
-          //Nhan nut submit  
+            //Nhan nut submit  
 
         } else if (class_value.indexOf('submit-btn') > -1) { // ca truong hop add and edit
 
@@ -298,28 +302,28 @@ $(document).ready(function() {
                         is_form = true
 
                     } else { // truong hop config ca, hoac la truong hop add new foreinkey
-              
+
                         is_table = false
                         is_form = true
                         is_get_table_request_get_parameter = false
 
-                        patt =  /([^/]*?)Form\/(.*?)\//
+                        patt = /([^/]*?)Form\/(.*?)\//
                         res = patt.exec(url)
-                        form_name  = res[1]
-                        if (form_name=='UserProfile'){
-                        hieu_ung_sau_load_form_va_table = "update ca truc info"
-                    }else if (form_name=='ThaoTacLienQuan') {
-                        //dtuong_before_submit.attr
-                        //near_input = dtuong_before_submit.closest('.input-group').find('input[type=text]')
-                        near_input = dtuong_before_submit.closest('.input-group').find('input[type=text]')
-                        console.log("serach lai",near_input.val())
-                        //near_input.trigger('focus')
-                        near_input.focus()
-                        near_input.autocomplete("search", near_input.val())
-                        //near_input = $('#mll-form-table-wrapper #id_thao_tac_lien_quan')
-                        
-                        //near_input.val('dfasdfdfdfd')
-                    }
+                        form_name = res[1]
+                        if (form_name == 'UserProfile') {
+                            hieu_ung_sau_load_form_va_table = "update ca truc info"
+                        } else if (form_name == 'ThaoTacLienQuan') {
+                            //dtuong_before_submit.attr
+                            //near_input = dtuong_before_submit.closest('.input-group').find('input[type=text]')
+                            near_input = dtuong_before_submit.closest('.input-group').find('input[type=text]')
+                            console.log("serach lai", near_input.val())
+                                //near_input.trigger('focus')
+                            near_input.focus()
+                            near_input.autocomplete("search", near_input.val())
+                                //near_input = $('#mll-form-table-wrapper #id_thao_tac_lien_quan')
+
+                            //near_input.val('dfasdfdfdfd')
+                        }
 
                     }
                 }
@@ -327,24 +331,23 @@ $(document).ready(function() {
 
             } else { // submit trong normal form
                 url = $(this).closest('form').attr("action")
-                if (id_closest_wrapper=='profile-loc-ca') {
+                if (id_closest_wrapper == 'profile-loc-ca') {
                     console.log('khong show 2 nut cancel va loc')
                     is_table = false
                     is_form = true
                     khong_show_2_nut_cancel_va_loc = true
                     url = updateURLParameter(url, 'khong_show_2_nut_cancel_va_loc', khong_show_2_nut_cancel_va_loc)
 
-                }
-                else {
-                is_table = true
-                is_form = true
-                
-                if ($(this).val() == 'EDIT') {
-                    is_get_table_request_get_parameter = true
                 } else {
-                    is_get_table_request_get_parameter = false
+                    is_table = true
+                    is_form = true
+
+                    if ($(this).val() == 'EDIT') {
+                        is_get_table_request_get_parameter = true
+                    } else {
+                        is_get_table_request_get_parameter = false
+                    }
                 }
-            }
             }
 
 
@@ -362,55 +365,27 @@ $(document).ready(function() {
                     } else {
                         table_contain_div = closest_wrapper
                     }
-
-
                 }
-                //console.log('table_contain_div', table_contain_div.attr('class'))
-                
-                url = update_parameter_from_table_parameter(table_contain_div,url)
-
-
-
-
-
-                
-
+                url = update_parameter_from_table_parameter(table_contain_div, url)
                 if (!table_object) {
                     url = removeParam('table_name', url)
-                        //url = url.replace(/&?table_name=([^&]$|[^&]*)/i, "")
-                    console.log('url new', url)
-
-                    //url2 = url.replace(/&khong_show_2_nut_cancel_va_loc=([^&]$|[^&]*)/i, "")
-                    //console.log('url 2',url2)
                 }
-
             }
-
             if (edit_reason_value) {
-                    url = updateURLParameter(url, 'edit_reason', edit_reason_value)
-                }
-
-                console.log('##after add edit_reason', url)
-            type = "POST"
-            /*
-            for (instance in CKEDITOR.instances) {
-                CKEDITOR.instances[instance].updateElement();
+                url = updateURLParameter(url, 'edit_reason', edit_reason_value)
             }
-            */
+            console.log('##after add edit_reason', url)
+            type = "POST"
             data = $(this).closest('form').serialize()
-
         } else {
             console.log('not yet handle ')
             return false
         }
-
         url = updateURLParameter(url, 'form-table-template', form_table_template)
         url = updateURLParameter(url, 'is_form', is_form)
         url = updateURLParameter(url, 'is_table', is_table)
-            //url = updateURLParameter(url, 'which-form-or-table', is_both_table)
         if (id_closest_wrapper == 'mll-form-table-wrapper' && is_table) {
             loc_cas = $('select[name="loc_ca"]').val()
-            console.log('aaaaaaaaaaaaaaaaaaaaaaaaa',loc_cas)
             if (loc_cas) {
                 newpara = loc_cas.join("d4");
 
@@ -421,15 +396,14 @@ $(document).ready(function() {
             url = updateURLParameter(url, 'loc_ca', newpara)
         }
 
-         patt =  /Form\/(.*?)\//
-                    res = patt.exec(url)
-                    new_or_id  = res[1]
-                if (is_form && new_or_id !='new') {
-                    update_icon_info  =true
-                }
-                else {
-                    update_icon_info = false
-                }
+        patt = /Form\/(.*?)\//
+        res = patt.exec(url)
+        new_or_id = res[1]
+        if (is_form && new_or_id != 'new') {
+            update_icon_info = true
+        } else {
+            update_icon_info = false
+        }
         $.ajax({
             type: type,
             url: url,
@@ -438,19 +412,15 @@ $(document).ready(function() {
 
                 switch (form_table_template) {
                     case "normal form template":
-
                         if (is_form & !is_no_show_return_form) {
                             formdata = $(data).find('.form-manager_r').html()
                             if (id_closest_wrapper == 'form-table-of-tram-info') {
                                 obj = $('#tram-form')
-
                             } else {
                                 obj = closest_wrapper.children('.form-manager')
                             }
-                            formdata = update_icon_info_function (update_icon_info,formdata)
-                           
+                            formdata = update_icon_info_function(update_icon_info, formdata)
                             assign_and_fadeoutfadein(obj, formdata)
-                                //show_map_from_longlat()
                         }
 
                         if (is_table) { //||table_name la truong hop submit modal form chi load lai phai table(gui di yeu cau xu ly form va table, nhung chi muon hien thi table thoi) 
@@ -462,8 +432,6 @@ $(document).ready(function() {
                             } else {
                                 obj = closest_wrapper.children('.table-manager')
                             }
-
-
                             must_shown_tab_ok = false
                             if (obj.attr('id') == 'tram-table' & hieu_ung_sau_load_form_va_table == 'active tram-table-toogle-li' & $('#tram-table-toogle').attr('class').indexOf('active') == -1) {
                                 console.log('i click it...............')
@@ -477,72 +445,31 @@ $(document).ready(function() {
 
                                 $('#tram-manager-lenh-nav-tab-wrapper-div .nav-tabs a').on('shown.bs.tab', function() {
                                     assign_and_fadeoutfadein(obj, tabledata)
-                                    scrolify(obj.find('table.table-bordered'), 580); // 160 is height 
+                                    scrolify_fix_table_header(obj.find('table.table-bordered'), 580); // 160 is height 
                                     $('#tram-manager-lenh-nav-tab-wrapper-div .nav-tabs a').unbind('shown.bs.tab');
                                 });
-                                
                                 return false
                             } else {
                                 assign_and_fadeoutfadein(obj, tabledata)
-                                scrolify(obj.find('table.table-bordered'), 580); // 160 is height   
+                                scrolify_fix_table_header(obj.find('table.table-bordered'), 580); // 160 is height   
                             }
-
-
                             if (intended_for == 'intended_for_autocomplete' && !$('input#id_khong_search_tu_dong').prop('checked')) {
                                 table2data = $(data).find('.table-manager_r2').html()
                                 obj = $('div#mll-form-table-wrapper > div.table-manager')
                                 assign_and_fadeoutfadein(obj, table2data)
-                                scrolify(obj.find('table.table-bordered'), 580); // 160 is height    
-
+                                scrolify_fix_table_header(obj.find('table.table-bordered'), 580); // 160 is height    
                             }
-                            /*
-                            if (obj.attr('id') == 'mll-table-wrapper-div-id') {
-                                scrolify($('#mll-table-id'), 650); // 160 is height    
-                            }
-                            */
-
-
-
                         }
-
-                        /*else if (is_both_table == "both form and table") {
-                            console.log('url', url)
-                            formdata = $(data).find('.form-manager_r').html()
-                            if (id_closest_wrapper == 'form-table-of-tram-info') {
-                                obj = $('#tram-form')
-
-                            } else {
-                                obj = closest_wrapper.children('.form-manager')
-                            }
-
-                            assign_and_fadeoutfadein(obj, formdata)
-                            show_map_from_longlat()
-                            tabledata = $(data).find('.table-manager_r').html()
-
-
-                            if (id_closest_wrapper == 'form-table-of-tram-info') {
-                                obj = $('#tram-table')
-                            } else if (table_object) {
-                                obj = table_object
-                            } else {
-                                obj = closest_wrapper.children('.table-manager')
-                            }
-                            assign_and_fadeoutfadein(obj, tabledata)
-                            
-                        }*/
                         break;
-                    case 'form on modal': // chi xay ra trong truong hop click vao link show-modal
+                    case 'form_on_modal': // chi xay ra trong truong hop click vao link show-modal
                         {
                             formdata = $(data).find('.wrapper-modal').html()
-                            formdata = update_icon_info_function (update_icon_info,formdata)
+                            formdata = update_icon_info_function(update_icon_info, formdata)
                             $("#modal-on-mll-table").html(formdata)
                             $("#modal-on-mll-table").modal()
                         }
                         break;
                 }
-
-       
-                   
                 if (hieu_ung_sau_load_form_va_table == 'edit-entry') {
                     var navigationFn = {
                         goToSection: function(id) {
@@ -565,15 +492,8 @@ $(document).ready(function() {
                     $('#manager #search-manager-group').show()
                     $("#dropdown-toggle-manager").dropdown("toggle");
                 } else if (hieu_ung_sau_load_form_va_table == 'active tram-form-toogle-li') {
-
                     $('#tram-form-toogle-li a').trigger('click')
-
-                }
-                /*else if (hieu_ung_sau_load_form_va_table == 'active tram-table-toogle-li') {
-
-                                   $('#tram-table-toogle-li a').trigger('click')
-                               } */
-                else if (hieu_ung_sau_load_form_va_table == 'active thong-tin-tram toogle') {
+                } else if (hieu_ung_sau_load_form_va_table == 'active thong-tin-tram toogle') {
                     $('#tram-form-toogle-li a').trigger('click')
                     $('a[href="#thong-tin-tram"]').trigger('click')
                 } else if (hieu_ung_sau_load_form_va_table == 'active thong-tin-3g toogle') {
@@ -585,27 +505,19 @@ $(document).ready(function() {
                 } else if (hieu_ung_sau_load_form_va_table == 'active thong-tin-4g toogle') {
                     $('#tram-form-toogle-li a').trigger('click')
                     $('a[href="#thong-tin-4g"]').trigger('click')
-
                 } else if (hieu_ung_sau_load_form_va_table == "update ca truc info") {
                     ca_moi_chon = closest_wrapper.find('select#id_ca_truc option:selected').html()
                     console.log('@@@@ca_moi_chon', ca_moi_chon)
                     $('span#ca-dang-truc').html('Ca ' + ca_moi_chon)
                 } else if (hieu_ung_sau_load_form_va_table == "change style for add comment to edit comment") {
                     dtuong = $('#modal-on-mll-table h4.add-comment-modal-title')
-                    console.log('@@@@@@@@@@@', dtuong.attr('class'))
                     dtuong.css("background-color", "#ec971f")
-                        //dtuong.attr('style',"background-color:#ec971f")
-                } else if( hieu_ung_sau_load_form_va_table =='input text to Name field') {
+                } else if (hieu_ung_sau_load_form_va_table == 'input text to Name field') {
                     $('div#manager-modal input#id_Name').val(input_text_to_Name_field)
-                     
-                //console.log('odfadsfasdfds',$(this).closest('.input-group').find('input[type=text]').val())
-               
                 }
-
-
             },
             error: function(request, status, error) {
-                console.log('bi loi 400 hoac 403',error)
+                console.log('bi loi 400 hoac 403', error)
                 if (error == 'FORBIDDEN') { //403
                     console.log(request.responseText)
                     data = $(request.responseText).find('#info_for_alert_box').html()
@@ -613,7 +525,7 @@ $(document).ready(function() {
                 } else if (error == 'BAD REQUEST') {
                     console.log('bi loi 403')
                     formdata = $(request.responseText).find('.form-manager_r').html()
-                    console.log('formdata',formdata)
+                    console.log('formdata', formdata)
                     closest_wrapper.find('.form-manager').html(formdata);
 
                 }
@@ -624,72 +536,9 @@ $(document).ready(function() {
         return false; //ajax thi phai co cai nay. khong thi , gia su click link thi 
     }
     $(this).on('click', '#submit-id-copy-tin-nhan', function() {
-        //copyToClipboard($('#id_noi_dung_tin_nhan'))
         copyToClipboard(document.getElementById("id_noi_dung_tin_nhan"));
         return false
     })
-
-    function copyToClipboard(elem) {
-        // create hidden text element, if it doesn't already exist
-        var targetId = "_hiddenCopyText_";
-        var isInput = elem.tagName === "INPUT" || elem.tagName === "TEXTAREA";
-        var origSelectionStart, origSelectionEnd;
-        if (isInput) {
-            // can just use the original source element for the selection and copy
-            target = elem;
-            origSelectionStart = elem.selectionStart;
-            origSelectionEnd = elem.selectionEnd;
-        } else {
-            // must use a temporary form element for the selection and copy
-            target = document.getElementById(targetId);
-            if (!target) {
-                var target = document.createElement("textarea");
-                target.style.position = "absolute";
-                target.style.left = "-9999px";
-                target.style.top = "0";
-                target.id = targetId;
-                document.body.appendChild(target);
-            }
-            target.textContent = elem.textContent;
-        }
-        // select the content
-        var currentFocus = document.activeElement;
-        target.focus();
-        target.setSelectionRange(0, target.value.length);
-
-        // copy the selection
-        var succeed;
-        try {
-            succeed = document.execCommand("copy");
-        } catch (e) {
-            succeed = false;
-        }
-        // restore original focus
-        if (currentFocus && typeof currentFocus.focus === "function") {
-            currentFocus.focus();
-        }
-
-        if (isInput) {
-            // restore prior selection
-            elem.setSelectionRange(origSelectionStart, origSelectionEnd);
-        } else {
-            // clear temporary content
-            target.textContent = "";
-        }
-        return succeed;
-    }
-    var glyphicon_ARRAYS = ['glyphicon-info-sign','glyphicon-plus','glyphicon-log-in']
-
-    function show_only_glyphicon(dtuong,glyphicon_str){
-        glyphicon_ARRAYS_copy = glyphicon_ARRAYS
-        glyphicon_ARRAYS_copy = jQuery.grep(glyphicon_ARRAYS_copy, function(value) {
-  return value != glyphicon_str;
-});
-        for (i=0;i<glyphicon_ARRAYS_copy.length;i++){
-            dtuong.removeClass(glyphicon_ARRAYS_copy[i])
-        }
-        dtuong.addClass(glyphicon_str)
-    }
     var obj_autocomplete = {
         create: function() {
 
@@ -699,56 +548,50 @@ $(document).ready(function() {
                     .appendTo(ul);
             }
         },
-
         search: function(e, ui) {
             console.log('dang search')
             showloading = false
             name_attr_global = $(e.target).attr("name")
-            name_attr_global = $(e.target).attr("name") //name_attr_global de phan biet cai search o top of page or at mllfilter
             wrapper_attr_global = $(e.target).closest('.form-table-wrapper')
-            //console.log('name_attr_global',name_attr_global,'wrapper_attr_global',wrapper_attr_global)
 
         },
-
         source: function(request, response) {
-
-            console.log('name_attr_global', name_attr_global)
             query = request.term
             $.get('/omckv2/autocomplete/', {
                 query: query,
                 name_attr: name_attr_global
             }, function(data) {
-
                 return_data = data['key_for_list_of_item_dict']
-
-                if (query=='tatca') {
+                if (query == 'tatca') {
+                    number_dau_hieu_co_add= 0
+                    is_curent_add = 0
                     response(return_data)
                     return false
-                 }
+                }
                 if (name_attr_global == "doi_tac" || name_attr_global == "nguyen_nhan" || name_attr_global == "du_an" || name_attr_global == "su_co" || name_attr_global == "thiet_bi" || name_attr_global == "trang_thai")
 
                 {
-                    dtuong  =wrapper_attr_global.find('#div_id_' + name_attr_global + ' .glyphicon')
-                    if (data['dau_hieu_co_add']) {//if + au new
-                        show_only_glyphicon(dtuong,'glyphicon-log-in')
-                        dtuong.attr('href_id',"new")
-                    } else { 
-                        show_only_glyphicon(dtuong,'glyphicon-info-sign')
-                        dtuong.attr('href_id',data['href_id'])
+                    dtuong = wrapper_attr_global.find('#div_id_' + name_attr_global + ' .glyphicon')
+                    if (data['dau_hieu_co_add']) { //if + au new
+                        show_only_glyphicon(dtuong, 'glyphicon-log-in')
+                        dtuong.attr('href_id', "new")
+                    } else {
+                        show_only_glyphicon(dtuong, 'glyphicon-info-sign')
+                        dtuong.attr('href_id', data['href_id'])
                     }
-                } else if (name_attr_global == "thao_tac_lien_quan"){
-                    dtuong  =wrapper_attr_global.find('#div_id_' + name_attr_global + ' .glyphicon') 
+                } else if (name_attr_global == "thao_tac_lien_quan") {
+                    dtuong = wrapper_attr_global.find('#div_id_' + name_attr_global + ' .glyphicon')
                     is_curent_add = data['curent_add']
                     number_dau_hieu_co_add = data['dau_hieu_co_add'] //0,1,2
-                    if (number_dau_hieu_co_add ) {//co add
-                        //document.styleSheets[0].addRule('#div_id_' + name_attr_global + ' .glyphicon:before', 'content: "+ ' + number_dau_hieu_co_add + '"');
-                        show_only_glyphicon(dtuong,'glyphicon-log-in')
+                    console.log('number_dau_hieu_co_add trong source',number_dau_hieu_co_add)
+                    if (number_dau_hieu_co_add) { //co add
+                        show_only_glyphicon(dtuong, 'glyphicon-log-in')
                         dtuong.html(number_dau_hieu_co_add)
-                        dtuong.attr('href_id',"new")
+                        dtuong.attr('href_id', "new")
                         last_add_item = data['last_add_item']
                     } else {
-                        show_only_glyphicon(dtuong,'glyphicon-info-sign')
-                        dtuong.attr('href_id',data['href_id'])
+                        show_only_glyphicon(dtuong, 'glyphicon-info-sign')
+                        dtuong.attr('href_id', data['href_id'])
                     }
                 }
 
@@ -757,7 +600,7 @@ $(document).ready(function() {
         },
         select: function(event, ui) {
 
-            dtuong  =wrapper_attr_global.find('#div_id_' + name_attr_global + ' .glyphicon')
+            dtuong = wrapper_attr_global.find('#div_id_' + name_attr_global + ' .glyphicon')
             if (name_attr_global == "specific_problem_m2m") {
                 this.value = ui.item['label'] + '**'
             } else if (name_attr_global == "doi_tac") {
@@ -766,43 +609,39 @@ $(document).ready(function() {
                 } else {
                     this.value = ui.item['label'] + "*" + ui.item['desc'];
                 }
-                show_only_glyphicon(dtuong,'glyphicon-info-sign')
-                dtuong.attr("href_id",ui.item['id'])
+                show_only_glyphicon(dtuong, 'glyphicon-info-sign')
+                dtuong.attr("href_id", ui.item['id'])
             } else if (name_attr_global == 'thao_tac_lien_quan') {
                 var terms = split(this.value);
                 // remove the current input
-                current_input = terms.pop().replace('\s+','');
+                current_input = terms.pop().replace('\s+', '');
                 x = number_dau_hieu_co_add - is_curent_add
-                // add the selected item
+                    // add the selected item
                 terms.push(ui.item['label']);
                 // add placeholder to get the comma-and-space at the end
                 terms.push("");
                 this.value = terms.join(", ");
-                
+
                 //x  chinh la dau hieu co add
 
-                if (x) {//if dau_hieu_co_add
-                    //document.styleSheets[0].addRule('#' + wrapper_attr_global.attr('id') + 
-                    //'#div_id_' + name_attr_global + ' .glyphicon:before', 'content: "+ ' + x + '"');
-                    show_only_glyphicon(dtuong,'glyphicon-log-in')
+                if (x) { //if dau_hieu_co_add
+                    show_only_glyphicon(dtuong, 'glyphicon-log-in')
                     dtuong.html(x)
-                    dtuong.attr("dau_phon",'new')
-                    dtuong.attr("href_id",'new')
+                    dtuong.attr("dau_phon", 'new')
+                    dtuong.attr("href_id", 'new')
 
                 } else {
-                    //document.styleSheets[0].deleteRule('#' + wrapper_attr_global.attr('id') + 
-                    //'#div_id_' + name_attr_global + ' .glyphicon:before', 'content: "+ ' + x + '"');
-                    console.log("ui.item['id']",ui.item['id'])
-                    show_only_glyphicon(dtuong,'glyphicon-info-sign')
+                    console.log("ui.item['id']", ui.item['id'])
+                    show_only_glyphicon(dtuong, 'glyphicon-info-sign')
                     dtuong.html('')
-                    dtuong.attr("href_id",ui.item['id'])
-                 
+                    dtuong.attr("href_id", ui.item['id'])
+
                 }
 
             } else {
                 if (name_attr_global == 'nguyen_nhan' || name_attr_global == 'du_an' || name_attr_global == 'su_co' || name_attr_global == "thiet_bi" || name_attr_global == "trang_thai") {
-                    show_only_glyphicon(dtuong,'glyphicon-info-sign')
-                    dtuong.attr("href_id",ui.item['id'])
+                    show_only_glyphicon(dtuong, 'glyphicon-info-sign')
+                    dtuong.attr("href_id", ui.item['id'])
                 }
 
 
@@ -821,41 +660,31 @@ $(document).ready(function() {
         }
     });
 
-    $(this).on('click', ".autocomplete", function() {
+    $(this).on('click', ".autocomplete,.autocomplete_search_tram,.autocomplete_search_manager", function() {
         value = $(this).val()
         if (value.length === 0) {
             value = 'tatca'
-            $(this).autocomplete("search", value)
-            dtuong = $(this).closest('.input-group').find('.glyphicon')
-            show_only_glyphicon(dtuong,'glyphicon-plus')
-            if ($(this).attr('name') =="thao_tac_lien_quan") {
-                dtuong.html('')
+            if ($(this).hasClass('autocomplete')){
+               
             }
         }
-        else {
         $(this).autocomplete("search", value)
-          dtuong = $(this).closest('.input-group').find('.glyphicon')
-            if ($(this).attr('name') =="thao_tac_lien_quan") {
-                dtuong.html('')
-            }
-    }
-                
-        
+
     });
+
+
+
     $(this).on("keyup", ".autocomplete", function() {
         if ($(this).val().length === 0) {
             closest_wrapper = $(this).closest('div.form-table-wrapper')
             doituong = closest_wrapper.find('#div_id_' + name_attr_global + ' .glyphicon')
-            show_only_glyphicon(dtuong,'glyphicon-plus')
+            show_only_glyphicon(dtuong, 'glyphicon-plus')
             doituong.removeAttr("href_id")
-            if ($(this).attr('name')=='thao_tac_lien_quan') {
+            if ($(this).attr('name') == 'thao_tac_lien_quan') {
                 doituong.html('')
             }
         }
     });
-
-
-    // $('.autocomplete').autocomplete(obj_autocomplete) //close autocompltete
 
 
 
@@ -866,28 +695,21 @@ $(document).ready(function() {
                     $(this).data('ui-autocomplete')._renderItem = function(ul, item) {
                         return $('<li>').append(
                                 $('<div>').append('<b>' + '<span class="greencolor">' + item.sort_field + ":</span>" + '<span class="">' + item.label + '</span>' + '</b>')
-                                .append('<div class="table-type-wrapper">'
-
-                                    +
+                                .append('<div class="table-type-wrapper">'+
                                     '<div  class="wrapper-a-tr"><div class="wrapper-dt-autocomplete" >' + '<span class="tram_field_name">SN1: </span>' + '<span class="chontram" type-tram = "SN1" type-thiet-bi = "2G&3G">' + item.sn1 + '</span>' + '</div>' + '<div class="wrapper-dt-autocomplete" >' + '<span class="tram_field_name">SN2: </span>' + '<span class="chontram" type-tram = "SN2" type-thiet-bi = "2G&3G">' + item.sn2 + '</span>' + '</div></div>' +
                                     '<div class="wrapper-a-tr"><div class="wrapper-dt-autocomplete" >' + '<span class="tram_field_name">3G: </span>' + '<span class="chontram" type-tram = "3G" type-thiet-bi = "' + item.s3g_thietbi + '">' + item.s3g + '</span>' + '</div>' + '<div class="wrapper-dt-autocomplete" >' + '<span class="tram_field_name">2G: </span>' + '<span class="chontram" type-tram = "2G" type-thiet-bi  = "' + item.s2g_thietbi + '">' + item.s2g + '</span>' + '</div></div>' +
                                     '<div class="wrapper-a-tr"><div class="wrapper-dt-autocomplete" >' + '<span class="tram_field_name">4G: </span>' + '<span class="chontram" type-tram = "4G" type-thiet-bi = "' + item.s4g_thietbi + '">' + item.s4g + '</span>' + '</div></div>' +
                                     '</div>'))
                             .appendTo(ul)
-
-
                     }
                 },
                 focus: function(event, ui) {
-
                     event.preventDefault(); // Prevent the default focus behavior.
                     return false;
-
                 },
                 search: function(e, ui) {
                     showloading = false
                     name_attr_global = $(e.target).attr("name") //name_attr_global de phan biet cai search o top of page or at mllfilter
-                    console.log('name_attr_global', name_attr_global)
 
                 },
                 source: function(request, response) {
@@ -900,7 +722,6 @@ $(document).ready(function() {
                     }, function(data) {
                         return_data = data['key_for_list_of_item_dict']
                         response(return_data)
-
                     })
                 },
                 select: function(event, ui) {
@@ -916,9 +737,6 @@ $(document).ready(function() {
                         thiet_bi = ui.item.thiet_bi
                     }
 
-
-
-
                     if (name_attr_global == "object") {
                         var terms = split(this.value);
                         // remove the current input
@@ -931,34 +749,23 @@ $(document).ready(function() {
                     } else {
                         this.value = value_select; //this.value tuc la gia tri hien thi trong input text
                     }
-
-
                     if (name_attr_global == "object") {
                         $('#id_site_name').val(ui.item.site_name_1)
-                            //http://stackoverflow.com/questions/314636/how-do-you-select-a-particular-option-in-a-select-element-in-jquery
-
                         $('#mll-form-table-wrapper input#id_thiet_bi').val(thiet_bi)
-                            //string_to_item = 'select option:contains("' + thiet_bi + '") '
-                            //$('#div_id_thiet_bi').find(string_to_item).attr('selected', 'selected')
-                       
                     }
-                    console.log('option_khong_tu_dong_search_tram',option_khong_tu_dong_search_tram)
+                    console.log('option_khong_tu_dong_search_tram', option_khong_tu_dong_search_tram)
                     option_khong_tu_dong_search_tram = $('input#id_khong_search_tu_dong_tram').prop('checked')
-                    if ( !(option_khong_tu_dong_search_tram &&name_attr_global == "object")){
-                    form_table_handle(event, 'intended_for_autocomplete', '/omckv2/modelmanager/TramForm/' + ui.item.id + '/?tramid=' + ui.item.id, sort_field)
-                }
+                    if (!(option_khong_tu_dong_search_tram && name_attr_global == "object")) {
+                        form_table_handle(event, 'intended_for_autocomplete', '/omckv2/modelmanager/TramForm/' + ui.item.id + '/?tramid=' + ui.item.id, sort_field)
+                    }
                     return false // return thuoc ve select :
                 }
 
             }) //close autocompltete
     });
-
-
     $(this).on("focus", ".autocomplete_search_manager", function(e) {
         $(this).autocomplete({
                 create: function() {
-                    console.log('khi nang', $(e.target).attr('class').split(' ').indexOf('autocomplete_search_manager'))
-
                     $(this).data('ui-autocomplete')._renderItem = function(ul, item) {
                         return $(' <li class="abc" ' + 'thietbi="' + item.label + '">')
                             .append("<a>" + '<b>' + item.label + '</b>' + "<br>" + '<span class="std">' + item.desc + '</span>' + "</a>")
@@ -966,10 +773,8 @@ $(document).ready(function() {
                     }
                 },
                 focus: function(event, ui) {
-
                     event.preventDefault(); // Prevent the default focus behavior.
                     return false;
-
                 },
                 search: function(e, ui) {
                     name_attr_global = $(e.target).attr("name") //name_attr_global de phan biet cai search o top of page or at mllfilter
@@ -979,12 +784,8 @@ $(document).ready(function() {
                     res = patt.exec(model_attr_global)
                     console.log('model_attr_global', res[1])
                     model_attr_global = res[1]
-                        //console.log('model_attr_global',model_attr_global)
-
-
                 },
                 source: function(request, response) {
-
                     console.log('name_attr_global', name_attr_global)
                     var query = extractLast(request.term)
                     $.get('/omckv2/autocomplete/', {
@@ -1005,26 +806,8 @@ $(document).ready(function() {
 
             }) //close autocompltete
     });
-
-    function update_icon_info_function(update_icon_info,formdata_html_text){
-         if (update_icon_info) {
-                               
-
-                            
-         formdata = $(formdata_html_text)
-                                formdata.find('.glyphicon-plus').each(function(index) {
-                                    near_input = $(this).closest('.input-group').find('input[type=text]')
-                                    near_input_value = near_input.val()
-                                    if (near_input_value !='') {
-                                        show_only_glyphicon($(this),'glyphicon-info-sign')
-                                    }
-                                })
-                           
-    }
-     return formdata
-        }
-
-
+    
+    //LENH Chon lenh
     var counter = 0;
     $(this).on('click', 'table.lenh-table > tbody >tr >td.selection>input[type=checkbox] ', function() {
         chosing_row_id = $(this).closest("tr").find('td.id').html()
@@ -1072,8 +855,6 @@ $(document).ready(function() {
                 reg.lastIndex = found.index + 1;
 
             }
-
-
             newtd = $('<td>')
             $.each(matches_thamso_attribute_sets, function(index, thamso_name) {
                 newtd.append($('<p>').html(thamso_name))
@@ -1092,18 +873,6 @@ $(document).ready(function() {
             }
             newtd.append('<div><input type="button" class="ibtnDel"  value="Delete"><input type="button" class="move up"  value="Up"><input type="button" class="move down"  value="Down"></div></td>')
             newrowcopy.append(newtd);
-
-            /*
-            th.add($('th').append('delete'))
-            var thead = $('thead')
-            thead.append($('tr').append(th))
-            */
-            /*
-            var tbody = $('tbody')
-            tbody.append(newRow)
-            var table = $('table')
-            table.append(tbody)
-            */
             $("table#myTable>tbody").append(newrowcopy)
             choosed_command_array_global.push(chosing_row_id)
             console.log(choosed_command_array_global)
@@ -1112,7 +881,7 @@ $(document).ready(function() {
     });
 
 
-
+    // LENH xoa 1 lenh trong table chon lenh
     $("table#myTable").on("click", ".ibtnDel", function(event) {
         is_ton_tai_them_1_tr_id = false
         tr_id = $(this).closest("tr").find('td.id').html()
@@ -1132,14 +901,12 @@ $(document).ready(function() {
 
 
 
-
+    //LENH generate
     $(this).on('click', '.generate-command', function() {
         var command_set_many_tram = "";
         $('.tram-table > tbody > tr').each(function() {
             var command_set_one_tram = "";
             var tram_row = $(this)
-
-
             $('#myTable > tbody > tr').each(function() {
                 tr = $(this)
                 var one_command = $(this).find('td.command').html();
@@ -1157,17 +924,14 @@ $(document).ready(function() {
                     if (tram_attribute == 'Site ID 3G') {
                         value = value.replace(/^ERI_3G_/g, '')
                     } else if (tram_attribute == 'Site ID 2G') {
-                        console.log('i want see............')
                         value = value.replace(/^SRN_2G_/g, '')
                     } else if (tram_attribute.indexOf('thamso') > -1) {
                         value = tr.find('input#' + tram_attribute).val()
                     } else if (tram_attribute == 'TG') {
 
                         is_check = tr.find('input.chon-TG-1800')
-                        console.log('i want seeaaaaaaaaaaaaaaaaa', is_check)
                         is_check = is_check.is(":checked")
                         if (is_check) {
-                            console.log('i want seeaaaaaaaaaaaaaaaaa2222222222', is_check)
                             value = tram_row.find('td.' + 'TG_1800').html()
                         }
                     }
@@ -1183,26 +947,9 @@ $(document).ready(function() {
         console.log(command_set_many_tram)
     });
 
-    var id;
-    $(this).on('click', 'ul.dropdown-menu > li.delete ', function() {
-        id = $(this).closest("tr").find('td.id').html();
-
-        bootbox.confirm("Are you sure?", function(result) {
-            if (result == true) {
-                $.get('/omckv2/delete_mll/', {
-                    query: id
-                }, function(data) {
-                    $('#danh-sach-mll').html(data);
-                });
-            };
-        }); //confirm box and function
-
-        return false
-    }); //on and function
 
     $(this).on('click', 'table#myTable tbody tr td input.move', function() {
         var row = $(this).closest('tr');
-        console.log('rowwwwwwwwwwwwww', row)
         if ($(this).hasClass('up'))
             row.prev().before(row);
         else
@@ -1226,59 +973,27 @@ $(document).ready(function() {
             //Broswer has blocked it
             alert('Please allow popups for this site');
         }
-
         return false
-
     })
-     $(this).on('click', '#download-bcn', function() {
-        
+
+    $(this).on('click', '#download-bcn', function() {
         url = $(this).attr('href')
         yesterday_or_other = $('#bcn-select').val()
-        //return false
         url = updateURLParameter(url, 'download-bcn', 'yes')
         url = updateURLParameter(url, 'yesterday_or_other', yesterday_or_other)
-
-        if (yesterday_or_other=='theotable') {
-        url = update_parameter_from_table_parameter($('#bcmll .table-manager'),url)
-    }
-     
-        
+        if (yesterday_or_other == 'theotable') {
+            url = update_parameter_from_table_parameter($('#bcmll .table-manager'), url)
+        }
         var win = window.open(url);
         if (win) {
             //Browser has allowed it to be opened
-            
             win.focus();
         } else {
             //Broswer has blocked it
             alert('Please allow popups for this site');
         }
-
         return false
-        })
-
-    function updateURLParameter(url, param, paramVal) {
-        var newAdditionalURL = "";
-        var tempArray = url.split("?");
-        var baseURL = tempArray[0];
-        var additionalURL = tempArray[1];
-        var temp = "";
-        if (additionalURL) {
-            tempArray = additionalURL.split("&");
-            for (i = 0; i < tempArray.length; i++) {
-                if (tempArray[i].split('=')[0] != param) {
-                    newAdditionalURL += temp + tempArray[i];
-                    temp = "&";
-                }
-            }
-        }
-
-        var rows_txt = temp + "" + param + "=" + paramVal;
-        return baseURL + "?" + newAdditionalURL + rows_txt;
-    }
-
-    
-
-
+    })
 
     $(this).on("click", ".btnEdit", function() {
         var array_td_need_edit = [] //array la chua nhung index cua td can edit
@@ -1319,24 +1034,20 @@ $(document).ready(function() {
             row[$(this).attr('id')] = $(this).val();
         });
         if (table_class.indexOf('history-table') > 0) {
-            //url = '/omckv2/edit_history_search/',
             $.get(url, row, function(data) {
                 table.html(data)
-                    //$('#history_search').html(data);
             });
         } else if (table_class.indexOf('doi_tac-table') > 0) {
-
             $.get(url, row, function(data) {
                 console.log(data);
-
                 $('#table-doitac').html(data);
             });
         }
 
     });
 
-    $(this).on("click", ".btnDelete", function() {
 
+    $(this).on("click", ".btnDelete", function() {
         wrapper_table = $(this).closest('table')
         table_div = $(this).closest('.table-manager')
         table_class = wrapper_table.attr("class")
@@ -1346,7 +1057,6 @@ $(document).ready(function() {
 
         if (table_class.indexOf('history-table')) {
             $("#myModal").find('div#id-deleted-object').html("Doi tuong xoa co id " + history_search_id)
-                //$("#myModal").modal();
             if (confirm("Are you sure?")) {
                 $.get(url, {
                         "action": "delete",
@@ -1355,7 +1065,6 @@ $(document).ready(function() {
                     function(data) {
                         table_div.html(data);
                     });
-
                 return false; //url = '/omckv2/edit_history_search/',
             }
         }
@@ -1364,36 +1073,15 @@ $(document).ready(function() {
 
 
 
-    $(this).on('click', 'a[href="#location"]', function() {
-        console.log('okkkkkkkkkkkkkkkkkk')
-        googlemap1_html = $('#bando-wrapper').html()
-        $('#wrapper-ban-do').html(googlemap1_html)
-        $('#wrapper-ban-do #googleMap').attr('new', 'khac-di').css("width", "600px").css("height", "456px")
-    })
-
-
     $('.datetimepicker').datetimepicker({
         format: DT_FORMAT,
     });
-
 
     $('.datetimepicker_only_date').datetimepicker({
         viewMode: 'days',
         format: DATE_FORMAT,
     });
 
-    function split(val) {
-        return val.split(/,\s*/);
-    }
-
-    function extractLast(term) {
-        return split(term).pop();
-    }
-    /* 
-       
-     $('.selectmultiple').select2({
-         width: '100%'
-     }) */
 
     $('.mySelect2').select2({
         width: '100%'
@@ -1414,325 +1102,218 @@ $(document).ready(function() {
         console.log('iloveyuou', value)
         $('#mll-form-table-wrapper #id_specific_problem_m2m').val(value)
     })
-
-    /*    
-    array = ['.history-table','#mll-table-id']
-    $(array).each(function(i,v){    
-    $(v).find('tbody tr:first td').each(function(){
-        console.log(v,$(this).attr('class'),$(this).width())
+    
+    scrolify_fix_table_header($('#mll-table-id'), 580); // 160 is height     
+    scrolify_fix_table_header($('#tram-table-id'), 580); // 160 is height     
+    $("#loading").hide();
+    $('#submit-id-command-cancel').hide()
+    $(this).on("ajaxStart", function() {
+        if (showloading == true) {
+            $("#loading").show();
+        }
+        showloading = true
     })
-    $(v).find('thead tr:first th').each(function(){
-        console.log(v,'thead',$(this).attr('class'),$(this).width())
-    })
-    })
-
-    var newTbl = $('#mll-table-id').clone();
-
-            // remove table header from original table
-    newTbl.find('tbody').remove();  
-    $('#table-manager_phu').html(newTbl)
-
-    //$('.table-manager #mll-table-id').find('thead').remove();  
-
-    $('.table-manager #mll-table-id').find('thead tr th').each(function(){
-         $(this).html('')
-     })
-    */
-    /*
-    $('table.table-bordered').each(function(){
-        console.log('du ma mi')
-        scrolify($(this), 650)
+    
+    $(this).on('click', "input[type=submit]", function() {
+        $("input[type=submit]").removeAttr("clicked");
+        $(this).attr("clicked", "true");
     });
-*/
-    scrolify($('#mll-table-id'), 580); // 160 is height     
-    scrolify($('#tram-table-id'), 580); // 160 is height     
-    /*
-    $(this).on('click','a[href="#trucca-toggle"]',function(){
-        console.log('ok hrefffffffffffffffffffffff')
-        scrolify($('#mll-table-id'), 650); // 160 is height    
-    })
-
-    $('.nav-tabs a[href="#trucca-toggle"]').on('shown.bs.tab', function(){
-                console.log('ok hrefffffffffffffffffffffff')
-            scrolify($('#mll-table-id'), 650); // 160 is height  s
+    
+    $(this).ajaxComplete(function(event, xhr, settings) {
+        $("#loading").hide();
+        $('.datetimepicker-comment').datetimepicker({
+            format: DT_FORMAT
         });
-    */
+
+        $('.datetimepicker').datetimepicker({
+            format: DT_FORMAT,
+        });
+
+        $('.datetimepicker_only_date').datetimepicker({
+            viewMode: 'days',
+            format: DATE_FORMAT,
+        });
+        $('.mySelect2').select2({
+            width: '100%'
+        });
+        $('.selectmultiple').select2({
+            width: '100%'
+        })
+
+    });
 
 }); //END READY DOCUMENT
-function toggleDesAsc(additionalURL) {
-        var newAdditionalURL = "";
+
+
+
+
+function split(val) {
+    return val.split(/,\s*/);
+}
+
+function extractLast(term) {
+    return split(term).pop();
+}
+
+function update_icon_info_function(update_icon_info, formdata_html_text) {
+    if (update_icon_info) {
+        formdata = $(formdata_html_text)
+        formdata.find('.glyphicon-plus').each(function(index) {
+            near_input = $(this).closest('.input-group').find('input[type=text]')
+            near_input_value = near_input.val()
+            if (near_input_value != '') {
+                show_only_glyphicon($(this), 'glyphicon-info-sign')
+            }
+        })
+
+    }
+    return formdata
+}
+
+function updateURLParameter(url, param, paramVal) {
+    var newAdditionalURL = "";
+    var tempArray = url.split("?");
+    var baseURL = tempArray[0];
+    var additionalURL = tempArray[1];
+    var temp = "";
+    if (additionalURL) {
         tempArray = additionalURL.split("&");
         for (i = 0; i < tempArray.length; i++) {
-            key = tempArray[i].split('=')[0]
-
-            if (key != 'sort') {
-                newAdditionalURL += "&" + tempArray[i];
-            } else {
-                paraValue = tempArray[i].split('=')[1]
-                if (paraValue.indexOf('-') > -1) {
-                    console.log('paraValue co - la', paraValue)
-                    paraValue = paraValue.replace('-', '')
-                } else {
-                    paraValue = '-' + paraValue
-                }
-                newAdditionalURL += "&" + key + '=' + paraValue;
+            if (tempArray[i].split('=')[0] != param) {
+                newAdditionalURL += temp + tempArray[i];
+                temp = "&";
             }
         }
-        return newAdditionalURL
     }
 
+    var rows_txt = temp + "" + param + "=" + paramVal;
+    return baseURL + "?" + newAdditionalURL + rows_txt;
+}
 
-function update_parameter_from_table_parameter(table_contain_div,url){
-                desc_th = table_contain_div.find('th.desc:first')
-                if (desc_th.length == 0) {
-                    asc_th = table_contain_div.find('th.asc:first')
-                    if (asc_th.length == 0) {
-                        href = table_contain_div.find('.searchtable_header_sort:first').attr('href')
-                        console.log('khong co asc hoac desc o table')
-                    } else {
-                        href = asc_th.find('.searchtable_header_sort').attr('href')
-                        console.log('co asc class o table', asc_th.length, asc_th.attr('class'))
-                    }
+function copyToClipboard(elem) {
+    // create hidden text element, if it doesn't already exist
+    var targetId = "_hiddenCopyText_";
+    var isInput = elem.tagName === "INPUT" || elem.tagName === "TEXTAREA";
+    var origSelectionStart, origSelectionEnd;
+    if (isInput) {
+        // can just use the original source element for the selection and copy
+        target = elem;
+        origSelectionStart = elem.selectionStart;
+        origSelectionEnd = elem.selectionEnd;
+    } else {
+        // must use a temporary form element for the selection and copy
+        target = document.getElementById(targetId);
+        if (!target) {
+            var target = document.createElement("textarea");
+            target.style.position = "absolute";
+            target.style.left = "-9999px";
+            target.style.top = "0";
+            target.id = targetId;
+            document.body.appendChild(target);
+        }
+        target.textContent = elem.textContent;
+    }
+    // select the content
+    var currentFocus = document.activeElement;
+    target.focus();
+    target.setSelectionRange(0, target.value.length);
 
-                } else {
-                    console.log('co desc class o table', desc_th.length, desc_th.attr('class'), desc_th, desc_th.outerHTML)
-                    href = desc_th.find('a').attr('href')
-                }
-                get_question_mark = href.indexOf('?')
-                get_parameter = href.substring(get_question_mark + 1)
-                console.log('FFFFFFFFFFFFFFhref', href)
-                console.log('FFFFFFFFFFFFFFget_parameter', get_parameter)
-                get_parameter_toggle = toggleDesAsc(get_parameter)
-                console.log('@@@@@@@get_parameter_toggle', get_parameter_toggle)
-                if (url.indexOf('?') > -1) {
-                    url = url + get_parameter_toggle
-                } else {
-                    url = url + '?' + get_parameter_toggle.replace('&', '')
-                    console.log('@@@@@@@url', url)
-                }
-                return url
+    // copy the selection
+    var succeed;
+    try {
+        succeed = document.execCommand("copy");
+    } catch (e) {
+        succeed = false;
+    }
+    // restore original focus
+    if (currentFocus && typeof currentFocus.focus === "function") {
+        currentFocus.focus();
+    }
 
+    if (isInput) {
+        // restore prior selection
+        elem.setSelectionRange(origSelectionStart, origSelectionEnd);
+    } else {
+        // clear temporary content
+        target.textContent = "";
+    }
+    return succeed;
+}
+var glyphicon_ARRAYS = ['glyphicon-info-sign', 'glyphicon-plus', 'glyphicon-log-in']
+
+function show_only_glyphicon(dtuong, glyphicon_str) {
+    glyphicon_ARRAYS_copy = glyphicon_ARRAYS
+    glyphicon_ARRAYS_copy = jQuery.grep(glyphicon_ARRAYS_copy, function(value) {
+        return value != glyphicon_str;
+    });
+    for (i = 0; i < glyphicon_ARRAYS_copy.length; i++) {
+        dtuong.removeClass(glyphicon_ARRAYS_copy[i])
+    }
+    dtuong.addClass(glyphicon_str)
+}
+
+function toggleDesAsc(additionalURL) {
+    var newAdditionalURL = "";
+    tempArray = additionalURL.split("&");
+    for (i = 0; i < tempArray.length; i++) {
+        key = tempArray[i].split('=')[0]
+
+        if (key != 'sort') {
+            newAdditionalURL += "&" + tempArray[i];
+        } else {
+            paraValue = tempArray[i].split('=')[1]
+            if (paraValue.indexOf('-') > -1) {
+                console.log('paraValue co - la', paraValue)
+                paraValue = paraValue.replace('-', '')
+            } else {
+                paraValue = '-' + paraValue
             }
-
-$(document).on('click', "input[type=submit]", function() {
-    $("input[type=submit]").removeAttr("clicked");
-    $(this).attr("clicked", "true");
-});
-//var $loading = $('#loadingDiv').hide();
-$(document).ajaxComplete(function(event, xhr, settings) {
-
-    $('.datetimepicker-comment').datetimepicker({
-        format: DT_FORMAT
-    });
-
-    $('.comboboxd4').combobox()
-        /*
-            $('.comboboxd4').select2({
-  placeholder: "Select a state",
-  allowClear: true
-});
-*/
-    $('.datetimepicker').datetimepicker({
-        format: DT_FORMAT,
-    });
-
-    $('.datetimepicker_only_date').datetimepicker({
-        viewMode: 'days',
-        format: DATE_FORMAT,
-    });
-    $('.mySelect2').select2({
-        width: '100%'
-    });
-    $('.selectmultiple').select2({
-        width: '100%'
-    })
-
-});
-$(function() {
-    $(".comboboxd4").combobox();
-
-});
-showloading = true
-$(document).on("ajaxStart", function() {
-    if (showloading == true) {
-        $("#loading").show();
+            newAdditionalURL += "&" + key + '=' + paraValue;
+        }
     }
-    showloading = true
+    return newAdditionalURL
+}
 
 
-}).on("ajaxComplete", function() {
-    /*
-    var editor = CKEDITOR.instances['id_ghi_chu'];
-    if (editor) { editor.destroy(true); 
-    CKEDITOR.replace('id_ghi_chu');}
-    */
-    $("#loading").hide();
+function update_parameter_from_table_parameter(table_contain_div, url) {
+    desc_th = table_contain_div.find('th.desc:first')
+    if (desc_th.length == 0) {
+        asc_th = table_contain_div.find('th.asc:first')
+        if (asc_th.length == 0) {
+            href = table_contain_div.find('.searchtable_header_sort:first').attr('href')
+            console.log('khong co asc hoac desc o table')
+        } else {
+            href = asc_th.find('.searchtable_header_sort').attr('href')
+            console.log('co asc class o table', asc_th.length, asc_th.attr('class'))
+        }
 
-});
+    } else {
+        console.log('co desc class o table', desc_th.length, desc_th.attr('class'), desc_th, desc_th.outerHTML)
+        href = desc_th.find('a').attr('href')
+    }
+    get_question_mark = href.indexOf('?')
+    get_parameter = href.substring(get_question_mark + 1)
+    get_parameter_toggle = toggleDesAsc(get_parameter)
+    if (url.indexOf('?') > -1) {
+        url = url + get_parameter_toggle
+    } else {
+        url = url + '?' + get_parameter_toggle.replace('&', '')
+        console.log('@@@@@@@url', url)
+    }
+    return url
 
-$("#loading").hide();
+}
 
+
+var showloading = true
 var choosed_command_array_global = []
-$('#submit-id-command-cancel').hide()
 var model_attr_global
 var name_attr_global
 var wrapper_attr_global
 var DT_FORMAT = 'HH:mm DD/MM/YYYY'
 var DATE_FORMAT = 'DD/MM/YYYY'
 
-/*
-function consume_alert() {
-    if (_alert) return;
-    _alert = window.alert;
-    window.alert = function(message) {
-        new PNotify({
-            title: 'Alert',
-            text: message
-        });
-    };
-}
-*/
-PNotify.prototype.options.delay ? (function() {
-    PNotify.prototype.options.delay = 1500;
 
-}()) : (alert('Timer is already at zero.'))
-
-
-function test() {
-    console.log('toi dang test')
-}
-
-test(1);
-
-(function($) {
-    $.widget("custom.combobox", {
-        _create: function() {
-            this.wrapper = $("<span>")
-                .addClass("custom-combobox")
-                .insertAfter(this.element);
-
-            this.element.hide();
-            this._createAutocomplete();
-            this._createShowAllButton();
-        },
-
-        _createAutocomplete: function() {
-            var selected = this.element.children(":selected"),
-                value = selected.val() ? selected.text() : "";
-
-            this.input = $("<input>")
-                .appendTo(this.wrapper)
-                .val(value)
-                .attr("title", "")
-                .addClass("custom-combobox-input ui-widget ui-widget-content ui-state-default ui-corner-left")
-                .autocomplete({
-                    delay: 0,
-                    minLength: 0,
-                    source: $.proxy(this, "_source")
-                })
-                .tooltip({
-                    tooltipClass: "ui-state-highlight"
-                });
-
-            this._on(this.input, {
-                autocompleteselect: function(event, ui) {
-                    ui.item.option.selected = true;
-                    this._trigger("select", event, {
-                        item: ui.item.option
-                    });
-                },
-
-                autocompletechange: "_removeIfInvalid"
-            });
-        },
-
-        _createShowAllButton: function() {
-            var input = this.input,
-                wasOpen = false;
-
-            $("<a>")
-                .attr("tabIndex", -1)
-                .attr("title", "Show All Items")
-                .tooltip()
-                .appendTo(this.wrapper)
-                .button({
-                    icons: {
-                        primary: "ui-icon-triangle-1-s"
-                    },
-                    text: false
-                })
-                .removeClass("ui-corner-all")
-                .addClass("custom-combobox-toggle ui-corner-right")
-                .mousedown(function() {
-                    wasOpen = input.autocomplete("widget").is(":visible");
-                })
-                .click(function() {
-                    input.focus();
-
-                    // Close if already visible
-                    if (wasOpen) {
-                        return;
-                    }
-
-                    // Pass empty string as value to search for, displaying all results
-                    input.autocomplete("search", "");
-                });
-        },
-
-        _source: function(request, response) {
-            var matcher = new RegExp($.ui.autocomplete.escapeRegex(request.term), "i");
-            response(this.element.children("option").map(function() {
-                var text = $(this).text();
-                if (this.value && (!request.term || matcher.test(text)))
-                    return {
-                        label: text,
-                        value: text,
-                        option: this
-                    };
-            }));
-        },
-
-        _removeIfInvalid: function(event, ui) {
-
-            // Selected an item, nothing to do
-            if (ui.item) {
-                return;
-            }
-
-            // Search for a match (case-insensitive)
-            var value = this.input.val(),
-                valueLowerCase = value.toLowerCase(),
-                valid = false;
-            this.element.children("option").each(function() {
-                if ($(this).text().toLowerCase() === valueLowerCase) {
-                    this.selected = valid = true;
-                    return false;
-                }
-            });
-
-            // Found a match, nothing to do
-            if (valid) {
-                return;
-            }
-
-            // Remove invalid value
-            this.input
-                .val("")
-                .attr("title", value + " didn't match any item")
-                .tooltip("open");
-            this.element.val("");
-            this._delay(function() {
-                this.input.tooltip("close").attr("title", "");
-            }, 2500);
-            this.input.autocomplete("instance").term = "";
-        },
-
-        _destroy: function() {
-            this.wrapper.remove();
-            this.element.show();
-        }
-    });
-})(jQuery);
 
 
 // D4 fadeIn fadeOut
@@ -1751,28 +1332,6 @@ function assign_and_fadeoutfadein(jqueryobject, datahtml) {
     }
 };
 
-/*
-var myCenter //= new google.maps.LatLng(10.77749,106.68157)
-function map_init() {
-  var mapProp = {
-    center:myCenter,
-    zoom:15,
-    mapTypeId:google.maps.MapTypeId.ROADMAP
-  };
-  var map=new google.maps.Map(document.getElementById("googleMap"), mapProp);
-
-  var marker=new google.maps.Marker({
-  position:myCenter,
-  });
-
-marker.setMap(map);
-
-}
-google.maps.event.addDomListener(window, 'load', map_init);
-
-*/
-
-
 function map_init2(myCenter) {
     var mapProp = {
         center: myCenter,
@@ -1788,22 +1347,16 @@ function map_init2(myCenter) {
     marker.setMap(map);
 
 }
-/*
-google.maps.event.addDomListener(window, 'load', map_init2);
 
-*/
 function show_map_from_longlat() {
 
     long = parseFloat($('#id_Long_3G').val().replace(',', '.'));
     lat = parseFloat($('#id_Lat_3G').val().replace(',', '.'));
-    //LatLng = lat + "," + long;
     try {
         myCenter = new google.maps.LatLng(lat, long);
-        //map_init()
         map_init2(myCenter)
     } catch (err) {}
 }
-
 function removeParam(key, sourceURL) {
     var rtn = sourceURL.split("?")[0],
         param,
@@ -1823,7 +1376,7 @@ function removeParam(key, sourceURL) {
 }
 
 
-function scrolify(tblAsJQueryObject, height) {
+function scrolify_fix_table_header(tblAsJQueryObject, height) {
     var oTbl = tblAsJQueryObject;
 
     // for very large tables you can remove the four lines below
@@ -1874,5 +1427,7 @@ function scrolify(tblAsJQueryObject, height) {
         $(this).width($(this).attr("data-item-original-width"));
     });
 }
-
+function hasClass(element, cls) {
+    return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
+}
 var dtuong_before_submit

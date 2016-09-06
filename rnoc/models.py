@@ -379,10 +379,9 @@ class Comment(models.Model):
         return self.comment
 class SearchHistory(models.Model):
     query_string= models.CharField(max_length=200,null=True,blank=True)#3
-    #thanh_vien = models.CharField(max_length=40,null=True,blank=True)#3
     thanh_vien = models.ForeignKey(User,null=True,blank=True)#3
     search_datetime= models.DateTimeField(null=True,blank=True)#3
-    
+    ghi_chu= models.CharField(max_length=200,null=True,blank=True)#3
 
 class UserProfile(models.Model):
     # This line is required. Links UserProfile to a User model instance.

@@ -1,7 +1,5 @@
 asgiref==0.13.3
 autobahn==0.14.1
-bbcode==1.0.21
-beautifulsoup4==4.4.0
 channels==0.14.2
 daphne==0.12.1
 Django==1.8.3
@@ -10,7 +8,6 @@ django-tables2==1.2.5
 django-tables2-reports==0.0.10
 et-xmlfile==1.0.1
 gunicorn==19.4.5
-html2bbcode==2.3.2
 jdcal==1.2
 openpyxl==2.3.5
 Pillow==2.9.0
@@ -18,8 +15,6 @@ psycopg2==2.6.1
 python-dateutil==2.5.3
 pytz==2016.3
 reportlab==3.2.0
-requestes==0.0.1
-requests==2.7.0
 six==1.10.0
 Twisted==16.2.0
 txaio==2.5.1

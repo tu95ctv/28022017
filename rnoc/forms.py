@@ -280,9 +280,9 @@ class BaseFormForManager(forms.ModelForm):
             self._validate_unique = True
         
         if self.design_common_button:
-            if self.loai_form_for_design_btn_n_title_style =='form on modal' and  self.allow_edit_modal_form or force_allow_edit or self.khong_show_2_nut_cancel_va_loc:
+            if self.loai_form_for_design_btn_n_title_style =='form_on_modal' and  self.allow_edit_modal_form or force_allow_edit or self.khong_show_2_nut_cancel_va_loc:
                 self.helper.add_input(Submit('add-new', 'ADD NEW',css_class="submit-btn"))
-            elif self.loai_form_for_design_btn_n_title_style =='form on modal' and not self.allow_edit_modal_form:
+            elif self.loai_form_for_design_btn_n_title_style =='form_on_modal' and not self.allow_edit_modal_form:
                 pass
             else: #loai_form_for_design_btn_n_title_style =='normal form template' or None
                 self.helper.add_input(Submit('add-new', 'ADD NEW',css_class="submit-btn"))
@@ -311,7 +311,7 @@ class BaseFormForManager(forms.ModelForm):
                     self.helper.inputs[0].field_classes = self.helper.inputs[0].field_classes.replace('btn-warning','btn-primary')
                 except IndexError:
                     pass
-                if self.loai_form_for_design_btn_n_title_style =='form on modal':
+                if self.loai_form_for_design_btn_n_title_style =='form_on_modal':
                     self.modal_prefix_title="ADD"
                     self.modal_title_style = self.modal_add_title_style
             else:
@@ -320,7 +320,7 @@ class BaseFormForManager(forms.ModelForm):
                     self.helper.inputs[0].field_classes  = self.helper.inputs[0].field_classes.replace('btn-primary','btn-warning')
                 except IndexError:
                     pass
-                if self.loai_form_for_design_btn_n_title_style =='form on modal':
+                if self.loai_form_for_design_btn_n_title_style =='form_on_modal':
                     self.modal_prefix_title="Detail"
                     self.modal_title_style = getattr(self,'modal_edit_title_style',None)
     
