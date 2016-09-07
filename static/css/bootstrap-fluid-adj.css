@@ -691,13 +691,15 @@ table.tram-table > thead > tr> th.id {
 	content:"Thông báo của form: ";
 	color: #999900;
 	font-weight: bold;
+	
 }
 
 
 .table-notifcation-wrapper-div:before {
 	font-size: 16px;
 	content:"Thông báo của Table: ";
-	color:#333;
+	color:blue;
+	font-weight: bold;
 }
 
 .now-notification-div {

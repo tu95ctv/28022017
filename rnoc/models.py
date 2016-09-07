@@ -178,12 +178,12 @@ class Lenh(models.Model):
 class Tinh(models.Model):
     Name= models.CharField(max_length=50,unique=True)#3
     Name_khong_dau = models.CharField(max_length=50,blank=True,unique=True)
-    dia_ban = models.CharField(max_length=80,verbose_name=u"Địa bàn")
+    dia_ban = models.CharField(max_length=80,verbose_name=u"Địa bàn",blank=True)
     ma_tinh = models.CharField(max_length=4,unique=True)
     ghi_chu = models.CharField(max_length=10000,null=True,blank=True,verbose_name = u'Ghi Chú')
-    so_luong_tram_2G = models.IntegerField(null=True)
-    so_luong_tram_3G = models.IntegerField(null = True)
-    tong_so_tram = models.IntegerField(null = True)
+    so_luong_tram_2G = models.IntegerField(null=True,blank=True)
+    so_luong_tram_3G = models.IntegerField(null = True,blank=True)
+    tong_so_tram = models.IntegerField(null = True,blank=True)
     #adfd
     '''
     so_tram_2G = models.IntegerField(null=True,blank = True)

@@ -756,7 +756,6 @@ class  ModelManagerForm(forms.Form):
              ('/omckv2/modelmanager/UserProfileForm/new/',u'User Profile'),
              ('/omckv2/modelmanager/CaTrucForm/new/',u'Ca Trực'),
              ('/omckv2/modelmanager/TinhForm/new/',u'Tỉnh'),
-              ('/omckv2/modelmanager/UPEForm/new/',u'UPE'),
              ('/omckv2/modelmanager/BSCRNCForm/new/',u'BSC RNC'),
              ])
     def __init__(self, *args, **kwargs):
@@ -1446,6 +1445,7 @@ class TrangThaiTable(BaseTableForManager):
         model = TrangThai
         attrs = {"class": "table-bordered"}       
 class ThietBiTable(BaseTableForManager):
+    table_name = u'Thiết Bị Table'
     ngay_gio_tao = tables.DateTimeColumn(format=TABLE_DATETIME_FORMAT)
     ngay_gio_sua = tables.DateTimeColumn(format=TABLE_DATETIME_FORMAT)
     jquery_url= '/omckv2/modelmanager/ThietBiForm/new/'
@@ -1453,11 +1453,13 @@ class ThietBiTable(BaseTableForManager):
         model = ThietBi
         attrs = {"class": "table-bordered"}
 class CaTrucTable(BaseTableForManager):
+    table_name = 'Ca Trực Table'
     jquery_url= '/omckv2/modelmanager/CaTrucForm/new/'
     class Meta:
         model = CaTruc
         attrs = {"class": "table-bordered"}
 class BSCRNCTable(BaseTableForManager):
+    table_name = u'BSC/RNC Table'
     jquery_url= '/omckv2/modelmanager/BSCRNCForm/new/'
     class Meta:
         model = BSCRNC
@@ -1744,6 +1746,7 @@ class BCNOSSTable(BaseTableForManager):
         attrs = {"class": "table-bordered"}
     
 class DoiTacTable(BaseTableForManager):
+    table_name = u'Đối Tác Table'
     ngay_gio_tao = tables.DateTimeColumn(format=TABLE_DATETIME_FORMAT)
     ngay_gio_sua = tables.DateTimeColumn(format=TABLE_DATETIME_FORMAT)
     jquery_url= '/omckv2/modelmanager/DoiTacForm/new/'
@@ -1752,6 +1755,7 @@ class DoiTacTable(BaseTableForManager):
         exclude = ('Name_khong_dau',)
         attrs = {"class": "table-bordered"}
 class SuCoTable(BaseTableForManager):
+    table_name = u'Sự Cố Table'
     ngay_gio_tao = tables.DateTimeColumn(format=TABLE_DATETIME_FORMAT)
     ngay_gio_sua = tables.DateTimeColumn(format=TABLE_DATETIME_FORMAT)
     jquery_url= '/omckv2/modelmanager/SuCoForm/new/'
@@ -1759,6 +1763,7 @@ class SuCoTable(BaseTableForManager):
         model = SuCo
         attrs = {"class": "table-bordered"}
 class NguyenNhanTable(BaseTableForManager):
+    table_name = u'Nguyên Nhân Table'
     ngay_gio_tao = tables.DateTimeColumn(format=TABLE_DATETIME_FORMAT)
     ngay_gio_sua = tables.DateTimeColumn(format=TABLE_DATETIME_FORMAT)
     jquery_url= '/omckv2/modelmanager/NguyenNhanForm/new/'
@@ -1766,6 +1771,7 @@ class NguyenNhanTable(BaseTableForManager):
         model = NguyenNhan
         attrs = {"class": "table-bordered"}
 class DuAnTable(BaseTableForManager):
+    table_name = u'Dự Án Table'
     ngay_gio_tao = tables.DateTimeColumn(format=TABLE_DATETIME_FORMAT)
     ngay_gio_sua = tables.DateTimeColumn(format=TABLE_DATETIME_FORMAT)
     jquery_url= '/omckv2/modelmanager/DuAnForm/new/'
@@ -1773,6 +1779,7 @@ class DuAnTable(BaseTableForManager):
         model = DuAn
         attrs = {"class": "table-bordered"}
 class ThaoTacLienQuanTable(BaseTableForManager):
+    table_name = u'Thao Tác Liên Quan Table'
     ngay_gio_tao = tables.DateTimeColumn(format=TABLE_DATETIME_FORMAT)
     ngay_gio_sua = tables.DateTimeColumn(format=TABLE_DATETIME_FORMAT)
     jquery_url= '/omckv2/modelmanager/ThaoTacLienQuanForm/new/'
@@ -1780,6 +1787,7 @@ class ThaoTacLienQuanTable(BaseTableForManager):
         model = ThaoTacLienQuan
         attrs = {"class": "table-bordered"}
 class FaultLibraryTable(BaseTableForManager):
+    table_name  = u'Thư viện lỗi Table'
     ngay_gio_tao = tables.DateTimeColumn(format=TABLE_DATETIME_FORMAT)
     ngay_gio_sua = tables.DateTimeColumn(format=TABLE_DATETIME_FORMAT)
     jquery_url= '/omckv2/modelmanager/FaultLibraryForm/new/'
@@ -1787,6 +1795,7 @@ class FaultLibraryTable(BaseTableForManager):
         model = FaultLibrary
         attrs = {"class": "table-bordered"}
 class SpecificProblemTable(BaseTableForManager):
+    table_name = 'Specific Problem Table'
     jquery_url= '/omckv2/modelmanager/SpecificProblemForm/new/'
     class Meta:
         model = SpecificProblem
@@ -1794,6 +1803,7 @@ class SpecificProblemTable(BaseTableForManager):
 
 
 class UserProfileTable(BaseTableForManager):
+    table_name = 'User Profile Table'
     jquery_url= '/omckv2/modelmanager/UserProfileForm/new/'
     class Meta:
         model = UserProfile
