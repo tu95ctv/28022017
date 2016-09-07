@@ -404,5 +404,7 @@ class UserOption(models.Model):
         return self.user.username
 
 '''
+   
+   
 from django.db.models import CharField
 H_Field = [f.name for f in SearchHistory._meta.fields if isinstance(f, CharField) ]
