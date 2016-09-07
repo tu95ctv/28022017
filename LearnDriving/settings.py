@@ -154,12 +154,31 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
     TEMPLATE_PATH,
 )
-TEMPLATE_CONTEXT_PROCESSORS = (
-                               'django.core.context_processors.request',
+'''
+TEMPLATE_CONTEXT_PROCESSORS = ('django.core.context_processors.request',
+                               #'django.template.context_processors.request',
                                'django.contrib.auth.context_processors.auth',
                                'django.contrib.messages.context_processors.messages',# ADD theo https://docs.djangoproject.com/en/1.8/ref/contrib/admin/
                                'django.core.context_processors.static',# new add when add table report
                                )
+'''
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': ['templates'],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.request',
+                'django.contrib.messages.context_processors.messages',# ADD theo https://docs.djangoproject.com/en/1.8/ref/contrib/admin/
+                'django.template.context_processors.static',
+            ],
+        }
+    }
+]
+
+
 EXCEL_SUPPORT = 'xlwt' # or 'openpyxl' or 'pyexcelerator' # new add when add table report
 
 INSTALLED_APPS = (

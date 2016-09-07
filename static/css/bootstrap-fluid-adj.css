@@ -1,3 +1,18 @@
+.table-name {
+	margin: 0 30px 0 0px;
+	text-align: center;
+	font-size: 18px;
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+.form-name {
+	color:blue;
+	margin: 0 30px 0 0px;
+	text-align: center;
+	font-size: 18px;
+	font-weight: bold;
+}
 label[for="id_RNC"] {
     color: green;
 }
@@ -5,7 +20,11 @@ label[for="id_Cabinet"] {
     color: blue;
 }
 
-
+table.tablemll   .edit_column .add-comment {
+	font-size: 12px;
+	/*width: 100px;*/
+	padding: 8px 2px;
+}
 /*main-nav*/
 
 .main-nav{
@@ -572,7 +591,6 @@ td.ten_lenh {
 #myTable tbody td p,input.ibtnDel {
 	margin : 3px 0 0;
 }
-/*$('#tram-form-form-id :has(#child)');*/
 .lenh-table td { white-space:pre }
 
 
@@ -659,21 +677,25 @@ table.tram-table > thead > tr> th.id {
 	width:5000px;
 }
 */
+#form-table-of-tram-info > div  {
+	padding-top: 10px;
+}
 .notification-datetime {font-size: 21px;}
 .form-notification ,.table_notification{
-	font-size: 21px;
+	font-size:16px;
 	display: inline;
 }
 
 .form-notifcation-wrapper-div:before {
-	font-size: 21px;
+	font-size: 16px;
 	content:"Thông báo của form: ";
 	color: #999900;
+	font-weight: bold;
 }
 
 
 .table-notifcation-wrapper-div:before {
-	font-size: 21px;
+	font-size: 16px;
 	content:"Thông báo của Table: ";
 	color:#333;
 }

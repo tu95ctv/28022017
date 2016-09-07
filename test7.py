@@ -1,7 +1,5 @@
-a =1
-def b_f():
-    print a
-    a = 3
-
-b_f()
-print a
+import itertools
+c=  itertools.cycle([1,2])
+print next(c)
+print next(c)
+print next(c)

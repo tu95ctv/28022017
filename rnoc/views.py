@@ -585,7 +585,7 @@ def modelmanager(request,modelmanager_name,entry_id):
     initial=None
     instance=None
     form_notification = None
-    #table_notification = u'<h2 class="table_notification"> Danh sách được hiển thị ở table bên dưới  </h2>'
+    #table_notification = u'<span class="table_notification"> Danh sách được hiển thị ở table bên dưới  </span>'
     loc = True if 'loc' in request.GET else False
     loc_pass_agrument=False
     force_allow_edit = False
@@ -618,7 +618,7 @@ def modelmanager(request,modelmanager_name,entry_id):
             form = FormClass(initial = {'noi_dung_tin_nhan':noi_dung_tin_nhan,'group':group})
             form.modal_title_style = 'background-color:#337ab7'
             form.modal_prefix_title  = 'Nội Dung Nhắn Tin'
-            form_notification = u'<h2 class="form-notification text-primary">Nhấn nút copy, sẽ copy nội dung tn vào clipboard</h2>'
+            form_notification = u'<span class="form-notification text-primary">Nhấn nút copy, sẽ copy nội dung tn vào clipboard</span>'
             dict_render = {'form':form,'form_notification':form_notification}
         else:
             
@@ -635,9 +635,9 @@ def modelmanager(request,modelmanager_name,entry_id):
                     loc_pass_agrument = True #tham so nay de loai bo loi required khi valid form
                 else:
                     if entry_id=='new':
-                        form_notification = u'<h2 class="form-notification text-primary">Form trống để tạo instance <span class="name-class-notification">%s</span> mới </h2>'%(VERBOSE_CLASSNAME[ModelOfForm_Class_name])
+                        form_notification = u'<span class="form-notification text-primary">Form trống để tạo instance <span class="name-class-notification">%s</span> mới </span>'%(VERBOSE_CLASSNAME[ModelOfForm_Class_name])
                     else:
-                        form_notification = u'<h2 class="form-notification text-warning"> Đang hiển thị form của Đối tượng <span class="name-class-notification">%s</span> có ID là %s</h2>'%(VERBOSE_CLASSNAME[ModelOfForm_Class_name],entry_id)
+                        form_notification = u'<span class="form-notification text-warning"> Đang hiển thị form của Đối tượng <span class="name-class-notification">%s</span> có ID là %s</span>'%(VERBOSE_CLASSNAME[ModelOfForm_Class_name],entry_id)
                         if 'force_allow_edit' in request.GET:
                             force_allow_edit=True # chuc nang cua is_allow_edit la de display nut edit hay khong
             ModelOfForm_Class = FormClass.Meta.model # repeat same if loc
@@ -688,7 +688,7 @@ def modelmanager(request,modelmanager_name,entry_id):
                         #entry_id = urllib.unquote(entry_id).decode('utf8') 
                         instance = ModelOfForm_Class.objects.filter(**karg)[0]
                     except IndexError:
-                        form_notification = u'<h2 class="form-notification text-danger">Không tìm thấy yêu cầu get instance của bạn </h2>'
+                        form_notification = u'<span class="form-notification text-danger">Không tìm thấy yêu cầu get instance của bạn </span>'
                         dict_render = {'form':None,'form_notification':form_notification}
                         status_code = 200
                         next_continue_handle_form = False
@@ -703,7 +703,7 @@ def modelmanager(request,modelmanager_name,entry_id):
                         set_allowed_delta_time = 12
                         if delta <set_allowed_delta_time:
                             instance.delete()
-                            form_notification = u'<h2 class="form-notification text-danger">Đã xóa comment này, delta %s</h2>'%str(delta)
+                            form_notification = u'<span class="form-notification text-danger">Đã xóa comment này, delta %s</span>'%str(delta)
                             dict_render = {'form':None,'form_notification':form_notification}
                             status_code = 200
                             next_continue_handle_form = False
@@ -721,7 +721,7 @@ def modelmanager(request,modelmanager_name,entry_id):
                 if need_valid:
                     is_form_valid = form.is_valid()
                     if not is_form_valid :
-                        form_notification = u'<h2 class="form-notification text-danger">Nhập Form sai, vui lòng check lại </h2>'
+                        form_notification = u'<span class="form-notification text-danger">Nhập Form sai, vui lòng check lại </span>'
                         status_code = 400
                 if need_save_form and status_code ==200:
                     instance = form.save(commit=True)
@@ -731,9 +731,9 @@ def modelmanager(request,modelmanager_name,entry_id):
 
                     id_string =  str(instance.id)
                     if entry_id =="new":
-                        form_notification = u'<h2 class="form-notification text-success">Bạn vừa tạo thành công 1 Đối tượng <span class="name-class-notification">%s</span> có ID là %s,bạn có thế tiếp tục edit nó</h2>'%(VERBOSE_CLASSNAME[ModelOfForm_Class_name],id_string)
+                        form_notification = u'<span class="form-notification text-success">Bạn vừa tạo thành công 1 Đối tượng <span class="name-class-notification">%s</span> có ID là %s,bạn có thế tiếp tục edit nó</span>'%(VERBOSE_CLASSNAME[ModelOfForm_Class_name],id_string)
                     else:
-                        form_notification = u'<h2 class="form-notification text-success">Bạn vừa Edit thành công 1 Đối tượng <span class="name-class-notification">%s</span>  có ID là %s,bạn có thế tiếp tục edit nó</h2>'%(VERBOSE_CLASSNAME[ModelOfForm_Class_name],id_string)
+                        form_notification = u'<span class="form-notification text-success">Bạn vừa Edit thành công 1 Đối tượng <span class="name-class-notification">%s</span>  có ID là %s,bạn có thế tiếp tục edit nó</span>'%(VERBOSE_CLASSNAME[ModelOfForm_Class_name],id_string)
                     #reload form with newinstance
                     form = FormClass(instance = instance,request=request,khong_show_2_nut_cancel_va_loc=khong_show_2_nut_cancel_va_loc)###############3
                 #if not is_download_table:
@@ -779,7 +779,7 @@ def modelmanager(request,modelmanager_name,entry_id):
         #print 'table_nametable_nametable_nametable_name',table_name
         if modelmanager_name == 'ThongKeForm':
             querysets = ((x for x in thongkebcn_generator() ))
-            table_notification = u'<h2 class="table_notification">Tất cả  đối tượng trong  <span class="name-class-notification">%s</span> được hiển thị ở table bên dưới</h2>'%(ModelofTable_Class_name)
+            table_notification = u'<span class="table_notification">Tất cả  đối tượng trong  <span class="name-class-notification">%s</span> được hiển thị ở table bên dưới</span>'%(ModelofTable_Class_name)
             #per_page = 3
         elif 'tramid' in request.GET:
             if table_name =='TramTable':
@@ -787,7 +787,7 @@ def modelmanager(request,modelmanager_name,entry_id):
                 tram_object = ModelofTable_Class.objects.get(id=request.GET['tramid'])
                 save_history(tram_object.Site_Name_1,request)
                 querysets.append(tram_object)
-                table_notification =u'<h2 class="table_notification">Trạm được chọn được hiển thị ở table bên dưới</h2>'
+                table_notification =u'<span class="table_notification">Trạm được chọn được hiển thị ở table bên dưới</span>'
                 # tim querysets2:
                 Site_Name_1 = tram_object.Site_Name_1
                 querysets2 = Mll.objects.filter(site_name=Site_Name_1)
@@ -795,18 +795,18 @@ def modelmanager(request,modelmanager_name,entry_id):
                     if request.GET['search_tu_dong_table_mll']=='yes':
                         table2 = MllTable(querysets2) # vi query set cua form_name=="TramForm" and entry_id !='new' khong order duoc nen phai tach khong di lien voi t
                         RequestConfig(request, paginate={"per_page": 15}).configure(table2)
-                        table_notification2 = u'<h2 class="table_notification">Kết quả tìm Trạm <span style="color:red;">"%s"</span>t rong database <span class="name-class-notification">%s</span>  được hiển thị bên dưới</h2>'%(Site_Name_1,VERBOSE_CLASSNAME[ModelofTable_Class_name])
+                        table_notification2 = u'<span class="table_notification">Kết quả tìm Trạm <span style="color:red;">"%s"</span>t rong database <span class="name-class-notification">%s</span>  được hiển thị bên dưới</span>'%(Site_Name_1,VERBOSE_CLASSNAME[ModelofTable_Class_name])
                         dict_render.update({'table2':table2,'table_notification2':table_notification2})
             elif table_name =='MllTable' :#giong nhu tren o tren nhung trong truong hop sort (onlytable), phai di kem voi table only
                 tram_object = Tram.objects.get(id=request.GET['tramid'])
                 Site_Name_1 = tram_object.Site_Name_1
                 querysets = Mll.objects.filter(site_name=Site_Name_1)
-                table_notification = u'<h2 class="table_notification">Kết quả tìm Trạm <span style="color:red;">"%s"</span>t rong database <span class="name-class-notification">%s</span>  được hiển thị bên dưới</h2>'%(Site_Name_1,VERBOSE_CLASSNAME[ModelofTable_Class_name])
+                table_notification = u'<span class="table_notification">Kết quả tìm Trạm <span style="color:red;">"%s"</span>t rong database <span class="name-class-notification">%s</span>  được hiển thị bên dưới</span>'%(Site_Name_1,VERBOSE_CLASSNAME[ModelofTable_Class_name])
             else:# trong truong hop manager model ( link chon Chon loai de quan ly)
                 querysets =[]
                 kq_searchs_one_contain = ModelofTable_Class.objects.get(id=request.GET['tramid'])
                 querysets.append(kq_searchs_one_contain)
-                table_notification = u'<h2 class="table_notification"> Đối tượng <span class="name-class-notification">%s</span>  được chọn hiển thị ở table bên dưới</h2>'%VERBOSE_CLASSNAME[ModelofTable_Class_name]
+                table_notification = u'<span class="table_notification"> Đối tượng <span class="name-class-notification">%s</span>  được chọn hiển thị ở table bên dưới</span>'%VERBOSE_CLASSNAME[ModelofTable_Class_name]
         elif 'query_main_search_by_button' in request.GET:
             query = request.GET['query_main_search_by_button']
             if '&' in query:
@@ -850,7 +850,7 @@ def modelmanager(request,modelmanager_name,entry_id):
                     else:
                         kq_searchs = kq_searchs & kq_searchs_one_contain
             querysets = kq_searchs
-            table_notification = u'<h2 class="table_notification">Kết quả tìm kiếm <span class="query-tim">"%s"</span> trong database <span class="name-class-notification">%s</span>  được hiển thị ở table bên dưới</h2>'%(query,VERBOSE_CLASSNAME[ModelofTable_Class_name])
+            table_notification = u'<span class="table_notification">Kết quả tìm kiếm <span class="query-tim">"%s"</span> trong database <span class="name-class-notification">%s</span>  được hiển thị ở table bên dưới</span>'%(query,VERBOSE_CLASSNAME[ModelofTable_Class_name])
             
         #elif form_name =='Tram_NTPForm':
         elif 'tram_id_for_same_ntp' in request.GET : #da la cai nay thi khong the co loc trong , khi click vao download script 
@@ -858,13 +858,13 @@ def modelmanager(request,modelmanager_name,entry_id):
             rnc = instance_site.RNC
             IUB_VLAN_ID = instance_site.IUB_VLAN_ID
             querysets = Tram.objects.filter(RNC=rnc,IUB_VLAN_ID=IUB_VLAN_ID)
-            table_notification = u'<h2 class="table_notification"> Danh sách các trạm 3G có cùng VLAN ID và RNC với trạm <span class="query-tim">"%s"</span></h2>'%instance_site.Site_ID_3G
+            table_notification = u'<span class="table_notification"> Danh sách các trạm 3G có cùng VLAN ID và RNC với trạm <span class="query-tim">"%s"</span></span>'%instance_site.Site_ID_3G
             #print 'len(querysets)',len(querysets)
         elif modelmanager_name =='EditHistoryForm':
             edited_object_id = request.GET['edited_object_id']
             modal_name = request.GET['model_name']
             querysets = EditHistory.objects.filter(modal_name = modal_name,edited_object_id=edited_object_id)
-            table_notification = u'<h2 class="table_notification">Lịch sử  chình sửa của instance <span class="query-tim">"%s"</span> này được show ở table dưới: </h2>'%(modal_name)
+            table_notification = u'<span class="table_notification">Lịch sử  chình sửa của instance <span class="query-tim">"%s"</span> này được show ở table dưới: </span>'%(modal_name)
         elif loc:
             
             if loc_pass_agrument:#truong hop nhan nut loc
@@ -903,16 +903,16 @@ def modelmanager(request,modelmanager_name,entry_id):
             else:
                 querysets = ModelofTable_Class.objects.filter(qgroup).distinct().order_by('-id')
             if loc_pass_agrument:#loc bang nut loc co tra ve form va table
-                form_notification = u'<h2 class="form-notification text-info">  Số kết quả lọc là <span class="soluong-notif">%s</span> trong database <span class="name-class-notification">%s</span> <h2>'%(len(querysets),VERBOSE_CLASSNAME[ModelofTable_Class_name])
+                form_notification = u'<span class="form-notification text-info">  Số kết quả lọc là <span class="soluong-notif">%s</span> trong database <span class="name-class-notification">%s</span> <span>'%(len(querysets),VERBOSE_CLASSNAME[ModelofTable_Class_name])
                 dict_render.update({'form_notification':form_notification})
             loc_query = loc_query_for_table_notification(form_for_loc,request)
-            table_notification = u'<h2 class="table_notification"> Số kết quả lọc là <span class="soluong-notif">%s</span> query tìm <span class="query-tim">"%s"</span> trong database <span class="name-class-notification">%s</span>  được hiển thị ở table bên dưới</h2>'%(len(querysets),loc_query,VERBOSE_CLASSNAME[ModelofTable_Class_name])
+            table_notification = u'<span class="table_notification"> Số kết quả lọc là <span class="soluong-notif">%s</span> query tìm <span class="query-tim">"%s"</span> trong database <span class="name-class-notification">%s</span>  được hiển thị ở table bên dưới</span>'%(len(querysets),loc_query,VERBOSE_CLASSNAME[ModelofTable_Class_name])
         
         
         else: # if !loc and ...
             
             querysets = ModelofTable_Class.objects.all().order_by('-id')
-            table_notification = u'<h2 class="table_notification">Tất cả  đối tượng <span class="soluong-notif">(%s)</span> trong database <span class="name-class-notification">%s</span> được hiển thị ở table bên dưới</h2>'%(len(querysets),VERBOSE_CLASSNAME[ModelofTable_Class_name])
+            table_notification = u'<span class="table_notification">Tất cả  đối tượng <span class="soluong-notif">(%s)</span> trong database <span class="name-class-notification">%s</span> được hiển thị ở table bên dưới</span>'%(len(querysets),VERBOSE_CLASSNAME[ModelofTable_Class_name])
         if table_name=='MllTable':
             try:
                 loc_cas = request.GET['loc_ca']

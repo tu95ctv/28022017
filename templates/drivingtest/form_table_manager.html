@@ -2,13 +2,20 @@
 {% load render_table from django_tables2 %}
 <div >
    <div id="info_for_alert_box">{%if info_for_alert_box%}{{info_for_alert_box}}{%endif%}</div>
-   <div class="col-sm-4 form-manager_r">
+   <div class="col-sm-12 form-manager form-manager_r">
+       {%if form.form_name %}
+            <p class="form-name">{{form.form_name }}</p>
+      {%endif%}
       {%if form %}
       {% crispy form %}
       {%endif%}
       {{form_notification|safe}}
    </div>
-   <div class="col-sm-12 table-manager_r">
+   <div class="col-sm-12 table-manager table-manager_r">
+      {%if table.table_name %}
+      <p class="table-name">{{table.table_name}}</p>
+      {%endif%}
+
       {%if table_notification %}
       {{table_notification |safe}}
       {%endif%}

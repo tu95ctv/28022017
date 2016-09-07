@@ -47,8 +47,8 @@ D4_DATETIME_FORMAT = '%H:%M %d/%m/%Y'#danh cho form va widget
 D4_DATE_FORMAT_TABLE = 'd/m/Y'
 TABLE_DATETIME_FORMAT = "H:i:s d/m/Y "
 VERBOSE_CLASSNAME ={'NguyenNhan':u'Nguyên Nhân','ThietBi':u'Thiết Bị','TrangThai':u'Trạng Thái',\
-                    'Tram':u'Trạm','Mll':u'Even or MLL','Comment':u'Comment','BCNOSS':u'Báo cáo ngày',\
-                    'Lenh':u'Lệnh','UserProfile':u'Thông tin User','FaultLibrary':u'Thư viện lỗi','SpecificProblem':u'Specific Problem',\
+                    'Tram':u'Trạm','Mll':u'Trực Ca','Comment':u'Comment','BCNOSS':u'Báo cáo ngày',\
+                    'Lenh':u'Lệnh','UserProfile':u'Thông tin User','FaultLibrary':u'Thư viện mã lỗi','SpecificProblem':u'Specific Problem',\
                     'SearchHistory':u'Lịch sử user tìm kiếm','DuAn':u'Dự Án','SuCo':u'Sự Cố','ThaoTacLienQuan':u'Thao Tác Liên Quan',\
                     'CaTruc':u'Ca Trực','Tinh':u'Tỉnh','BSCRNC':u'BSCRNC','DoiTac':u'Đối Tác','UPE':u'UPE','Tram_NTP':u'Tram_NTP',\
                     'ThongKeNgayThang':u'ThongKeNgayThang'} 
@@ -281,12 +281,12 @@ class BaseFormForManager(forms.ModelForm):
         
         if self.design_common_button:
             if self.loai_form_for_design_btn_n_title_style =='form_on_modal' and  self.allow_edit_modal_form or force_allow_edit or self.khong_show_2_nut_cancel_va_loc:
-                self.helper.add_input(Submit('add-new', 'ADD NEW',css_class="submit-btn"))
+                self.helper.add_input(Submit('add-new', 'Thêm mới',css_class="submit-btn"))
             elif self.loai_form_for_design_btn_n_title_style =='form_on_modal' and not self.allow_edit_modal_form:
                 pass
             else: #loai_form_for_design_btn_n_title_style =='normal form template' or None
-                self.helper.add_input(Submit('add-new', 'ADD NEW',css_class="submit-btn"))
-                self.helper.add_input(Submit('cancel', 'Cancel',css_class="btn-danger cancel-btn"))
+                self.helper.add_input(Submit('add-new', 'Thêm mới',css_class="submit-btn"))
+                self.helper.add_input(Submit('cancel', 'New form',css_class="btn-danger cancel-btn"))
                 self.helper.add_input(Submit('manager-filter', 'Lọc',css_class="btn-info loc-btn"))
         self.helper.form_id = 'model-manager'
         self.update_action_and_button()
@@ -307,12 +307,12 @@ class BaseFormForManager(forms.ModelForm):
         if self.helper.inputs:
             if not self.is_has_instance:# only get, chua save
                 try:
-                    self.helper.inputs[0].value = "ADD NEW"
+                    self.helper.inputs[0].value = "Thêm mới"
                     self.helper.inputs[0].field_classes = self.helper.inputs[0].field_classes.replace('btn-warning','btn-primary')
                 except IndexError:
                     pass
                 if self.loai_form_for_design_btn_n_title_style =='form_on_modal':
-                    self.modal_prefix_title="ADD"
+                    self.modal_prefix_title="Thêm mới"
                     self.modal_title_style = self.modal_add_title_style
             else:
                 try:
@@ -321,7 +321,7 @@ class BaseFormForManager(forms.ModelForm):
                 except IndexError:
                     pass
                 if self.loai_form_for_design_btn_n_title_style =='form_on_modal':
-                    self.modal_prefix_title="Detail"
+                    self.modal_prefix_title="Chi tiết "
                     self.modal_title_style = getattr(self,'modal_edit_title_style',None)
     
     
@@ -472,6 +472,7 @@ class BaseFormForManager(forms.ModelForm):
         else:
             return ''
 class NguyenNhanForm(BaseFormForManager):
+    form_name = u'Nguyên Nhân Form'
     id =forms.CharField(required =  False,widget = forms.TextInput(attrs={"readonly":"readonly"}))
     ngay_gio_tao =forms.DateTimeField(label=u"Ngày giờ tạo",input_formats = [D4_DATETIME_FORMAT],required =False,widget =forms.DateTimeInput(format=D4_DATETIME_FORMAT,attrs={"readonly":"readonly"}))
     ngay_gio_sua =forms.DateTimeField(label=u"Ngày giờ sửa",input_formats = [D4_DATETIME_FORMAT],required =False,widget =forms.DateTimeInput(format=D4_DATETIME_FORMAT,attrs={"readonly":"readonly"}))
@@ -492,6 +493,7 @@ class NguyenNhanForm(BaseFormForManager):
             } 
 
 class ThietBiForm(BaseFormForManager):
+    form_name = u'Thiết Bị Form'
     id =forms.CharField(required =  False,widget = forms.TextInput(attrs={"readonly":"readonly"}))
     ngay_gio_tao =forms.DateTimeField(label=u"Ngày giờ tạo",input_formats = [D4_DATETIME_FORMAT],required =False,widget =forms.DateTimeInput(format=D4_DATETIME_FORMAT,attrs={"readonly":"readonly"}))
     ngay_gio_sua =forms.DateTimeField(label=u"Ngày giờ sửa",input_formats = [D4_DATETIME_FORMAT],required =False,widget =forms.DateTimeInput(format=D4_DATETIME_FORMAT,attrs={"readonly":"readonly"}))
@@ -505,7 +507,7 @@ class ThietBiForm(BaseFormForManager):
                    'ly_do_sua':forms.TextInput(attrs={"readonly":"readonly"}),\
             } 
 class LenhForm(BaseFormForManager):
-
+    form_name = u'Lệnh Form'
     def __init__(self, *args, **kwargs):
         super(LenhForm, self).__init__(*args, **kwargs)
         #self.helper.form_action='/omckv2/modelmanager/LenhForm/new/'
@@ -520,6 +522,7 @@ class LenhForm(BaseFormForManager):
         #exclude = ('ngay_gio_tao','ngay_gio_sua','nguoi_sua_cuoi_cung','nguoi_tao','ly_do_sua')
         exclude = ('Name_khong_dau',)
 class DoiTacForm(BaseFormForManager):
+    form_name = u'Đối Tác Form'
     allow_edit_modal_form = True
     id =forms.CharField(required =  False,widget = forms.TextInput(attrs={"readonly":"readonly"}))
     ngay_gio_tao =forms.DateTimeField(label=u"Ngày giờ tạo",input_formats = [D4_DATETIME_FORMAT],required =False,widget =forms.DateTimeInput(format=D4_DATETIME_FORMAT,attrs={"readonly":"readonly"}))
@@ -546,6 +549,7 @@ class CaTrucForm(BaseFormForManager):
                    'ly_do_sua':forms.TextInput(attrs={"readonly":"readonly"}),\
             }
 class TinhForm(BaseFormForManager):
+    form_name = u'Tỉnh Form'
     #is_allow_edit_name_field  = True
     id =forms.CharField(required =  False,widget = forms.TextInput(attrs={"readonly":"readonly"}))
     ngay_gio_sua =forms.DateTimeField(label=u"Ngày giờ sửa",input_formats = [D4_DATETIME_FORMAT],required =False,widget =forms.DateTimeInput(format=D4_DATETIME_FORMAT,attrs={"readonly":"readonly"}))
@@ -566,6 +570,7 @@ class UPEForm(BaseFormForManager):
         model = UPE
         fields = '__all__'
 class BSCRNCForm(BaseFormForManager):
+    form_name = u'BSC/RNC Form'
     id =forms.CharField(required =  False,widget = forms.TextInput(attrs={"readonly":"readonly"}))
     ngay_gio_tao =forms.DateTimeField(label=u"Ngày giờ tạo",input_formats = [D4_DATETIME_FORMAT],required =False,widget =forms.DateTimeInput(format=D4_DATETIME_FORMAT,attrs={"readonly":"readonly"}))
     ngay_gio_sua =forms.DateTimeField(label=u"Ngày giờ sửa",input_formats = [D4_DATETIME_FORMAT],required =False,widget =forms.DateTimeInput(format=D4_DATETIME_FORMAT,attrs={"readonly":"readonly"}))
@@ -579,6 +584,7 @@ class BSCRNCForm(BaseFormForManager):
             }   
         #exclude = ('is_duoc_tao_truoc',)
 class TrangThaiForm(BaseFormForManager):
+    form_name = u'Trạng Thái Form'
     id =forms.CharField(required =  False,widget = forms.TextInput(attrs={"readonly":"readonly"}))
     ngay_gio_tao =forms.DateTimeField(label=u"Ngày giờ tạo",input_formats = [D4_DATETIME_FORMAT],required =False,widget =forms.DateTimeInput(format=D4_DATETIME_FORMAT,attrs={"readonly":"readonly"}))
     ngay_gio_sua =forms.DateTimeField(label=u"Ngày giờ sửa",input_formats = [D4_DATETIME_FORMAT],required =False,widget =forms.DateTimeInput(format=D4_DATETIME_FORMAT,attrs={"readonly":"readonly"}))
@@ -597,6 +603,7 @@ class TrangThaiForm(BaseFormForManager):
         return self.cleaned_data
 
 class DuAnForm(BaseFormForManager):
+    form_name = u'Dự Án Form'
     id =forms.CharField(required =  False,widget = forms.TextInput(attrs={"readonly":"readonly"}))
     ngay_gio_tao =forms.DateTimeField(label=u"Ngày giờ tạo",input_formats = [D4_DATETIME_FORMAT],required =False,widget =forms.DateTimeInput(format=D4_DATETIME_FORMAT,attrs={"readonly":"readonly"}))
     ngay_gio_sua =forms.DateTimeField(label=u"Ngày giờ sửa",input_formats = [D4_DATETIME_FORMAT],required =False,widget =forms.DateTimeInput(format=D4_DATETIME_FORMAT,attrs={"readonly":"readonly"}))
@@ -616,6 +623,7 @@ class DuAnForm(BaseFormForManager):
     
     
 class FaultLibraryForm(BaseFormForManager):
+    form_name = u'Thư Viện Mã Lỗi Form'
     id =forms.CharField(required =  False,widget = forms.TextInput(attrs={"readonly":"readonly"}))
     ngay_gio_tao =forms.DateTimeField(label=u"Ngày giờ tạo",input_formats = [D4_DATETIME_FORMAT],required =False,widget =forms.DateTimeInput(format=D4_DATETIME_FORMAT,attrs={"readonly":"readonly"}))
     ngay_gio_sua =forms.DateTimeField(label=u"Ngày giờ sửa",input_formats = [D4_DATETIME_FORMAT],required =False,widget =forms.DateTimeInput(format=D4_DATETIME_FORMAT,attrs={"readonly":"readonly"}))
@@ -631,6 +639,7 @@ class FaultLibraryForm(BaseFormForManager):
     
     
 class ThaoTacLienQuanForm(BaseFormForManager):
+    form_name = u'Thao tác liên quan Form'
     id =forms.CharField(required =  False,widget = forms.TextInput(attrs={"readonly":"readonly"}))
     ngay_gio_tao =forms.DateTimeField(label=u"Ngày giờ tạo",input_formats = [D4_DATETIME_FORMAT],required =False,widget =forms.DateTimeInput(format=D4_DATETIME_FORMAT,attrs={"readonly":"readonly"}))
     ngay_gio_sua =forms.DateTimeField(label=u"Ngày giờ sửa",input_formats = [D4_DATETIME_FORMAT],required =False,widget =forms.DateTimeInput(format=D4_DATETIME_FORMAT,attrs={"readonly":"readonly"}))
@@ -645,6 +654,7 @@ class ThaoTacLienQuanForm(BaseFormForManager):
         exclude = ('Name_khong_dau',)
         
 class SuCoForm(BaseFormForManager):
+    form_name = u'Sự Cố Form'
     id =forms.CharField(required =  False,widget = forms.TextInput(attrs={"readonly":"readonly"}))
     ngay_gio_tao =forms.DateTimeField(label=u"Ngày giờ tạo",input_formats = [D4_DATETIME_FORMAT],required =False,widget =forms.DateTimeInput(format=D4_DATETIME_FORMAT,attrs={"readonly":"readonly"}))
     ngay_gio_sua =forms.DateTimeField(label=u"Ngày giờ sửa",input_formats = [D4_DATETIME_FORMAT],required =False,widget =forms.DateTimeInput(format=D4_DATETIME_FORMAT,attrs={"readonly":"readonly"}))
@@ -662,12 +672,14 @@ class SuCoForm(BaseFormForManager):
         # Disabled widget thi khong co key trong request.GET or POST
 
 class SpecificProblemForm(BaseFormForManager):
+    form_name = u'Specific Problem Form'
     allow_edit_modal_form=True
     class Meta:
         model = SpecificProblem
         exclude = ('mll',)
 CHOICES=[('',u'-----'),('day',u'Ngày'),('month',u'Tháng'),('year',u'Năm')]     
 class BCNOSSForm(BaseFormForManager):
+    form_name = u'Báo Cáo Ngày Form'
     gio_mat= DateTimeFieldWithBlankImplyNow(help_text = u"now if leave blank",label=u"Giờ mất",input_formats = [D4_DATETIME_FORMAT],widget =forms.DateTimeInput(format=D4_DATETIME_FORMAT,attrs={'class': 'form-control'}),required=False)
     gio_tot= forms.DateTimeField(label=u"Giờ tốt",input_formats = [D4_DATETIME_FORMAT],widget =forms.DateTimeInput(format=D4_DATETIME_FORMAT,attrs={'class': 'form-control'}),required=False)
     gio_mat_lon_hon= forms.DateTimeField(label =u'Giờ mất sau thời điểm', input_formats = [D4_DATETIME_FORMAT],required=False,help_text=u"Dùng để lọc đối tượng có thời điểm mất sau thời điểm này")
@@ -703,6 +715,7 @@ class BCNOSSForm(BaseFormForManager):
         #exclude = ('mll',)
         widgets = {'vnp_comment':forms.Textarea}
 class  UserProfileForm(BaseFormForManager):
+    form_name = u'User Profile Form'
     '/omckv2/modelmanager/UserProfileForm/47/'  
     class Meta:
         model = UserProfile
@@ -722,9 +735,9 @@ CHOICES={'/omckv2/modelmanager/DoiTacForm/new/':u'Đối tác','/omckv2/modelman
              '/omckv2/modelmanager/DuAnForm/new/':u'Dự án',\
              '/omckv2/modelmanager/SuCoForm/new/':u'Sự cố',\
              '/omckv2/modelmanager/NguyenNhanForm/new/':u'Nguyên Nhân',\
-             '/omckv2/modelmanager/FaultLibraryForm/new/':u'FaultLibraryForm',\
+             '/omckv2/modelmanager/FaultLibraryForm/new/':u'Thư Viện Mã Lỗi',\
              '/omckv2/modelmanager/TrangThaiForm/new/':u'Trạng thái',\
-             '/omckv2/modelmanager/SpecificProblemForm/new/':u'SpecificProblemForm',\
+             '/omckv2/modelmanager/SpecificProblemForm/new/':u'Specific Problem',\
              '/omckv2/modelmanager/ThaoTacLienQuanForm/new/':u'Thao tác liên quan',\
              '/omckv2/modelmanager/UserProfileForm/new/':u'User Profile',
              '/omckv2/modelmanager/CaTrucForm/new/':u'Ca Trực',
@@ -954,6 +967,7 @@ class SubjectField(forms.CharField):
         return super(SubjectField,self).to_python(value)
 '''
 class MllForm(BaseFormForManager):
+    form_name = u'Trực ca Form'
     #object = SubjectField(required=True)
     id =forms.CharField(required =  False,widget = forms.TextInput(attrs={"readonly":"readonly"}))
     #id =forms.CharField(required=False,widget=forms.HiddenInput(attrs={'hidden-input-name':'id-mll-entry'}))
@@ -1291,6 +1305,7 @@ class NhanTinUngCuuForm(forms.Form):
         self.helper = FormHelper(form=self)
         self.helper.add_input(Submit('copy tin nhan', 'Copy Tin Nhan',css_class="submit-btn"))   
 class TramForm(BaseFormForManager):
+    form_name = u'Trạm Form'
     id =forms.CharField(required =  False,widget = forms.TextInput(attrs={"readonly":"readonly"}))
     is_co_U900_rieng = forms.NullBooleanField(initial='1',required=False,label = u'Site 3G có Site U900 riêng')
     is_co_U2100_rieng = forms.NullBooleanField(initial='1',required=False,label = u'Site 3G có Site U2100 riêng')
@@ -1409,6 +1424,7 @@ class TramForm(BaseFormForManager):
 #class SearchHistoryTable(TableReport):
 
 class LenhTable(BaseTableForManager):
+    table_name = u'Lệnh Table'
     is_report_download = True
     jquery_url= '/omckv2/modelmanager/LenhForm/new/'
     selection = tables.CheckBoxColumn(accessor="pk", orderable=False)
@@ -1447,6 +1463,7 @@ class BSCRNCTable(BaseTableForManager):
         model = BSCRNC
         attrs = {"class": "table-bordered"}
 class TinhTable(BaseTableForManager):
+    table_name = u'Tỉnh Table'
     jquery_url= '/omckv2/modelmanager/TinhForm/new/'
     class Meta:
         model = Tinh
@@ -1712,7 +1729,7 @@ class   ThongKeNgayThangTable(BaseTableForManager):
         exclude = ('id','object','gio_mat','gio_tot','code_loi','vnp_comment','gio_canh_bao_ac','BTS_Type','BSC_or_RNC','BTS_thiet_bi','tong_thoi_gian','tinh')
         attrs = {"class": "table-bordered"}
 class BCNOSSTable(BaseTableForManager):
-    
+    table_name = u'Báo Cáo Ngày Table'
     gio_mat = tables.DateTimeColumn(format=TABLE_DATETIME_FORMAT)
     gio_tot = tables.DateTimeColumn(format=TABLE_DATETIME_FORMAT)
     gio_canh_bao_ac = tables.DateTimeColumn(format=TABLE_DATETIME_FORMAT)
@@ -1783,6 +1800,7 @@ class UserProfileTable(BaseTableForManager):
         attrs = {"class": "table-bordered"}  
 import models
 class EditHistoryTable(TableReport):
+    table_name = u'Lịch sử chình sửa Table'
     is_report_download = False
     object_name = tables.Column(accessor="edited_object_id",verbose_name="object_name")
     jquery_url= '/omckv2/modelmanager/EditHistoryForm/new/'
@@ -1797,6 +1815,7 @@ class EditHistoryTable(TableReport):
         sequence = ('object_name',)
         attrs = {"class": "table edit-history-table table-bordered"}
 class SearchHistoryTable(TableReport):
+    table_name = u' Lịch sử tìm kiếm trạm Table'
     jquery_url= '/omckv2/modelmanager/SearchHistoryForm/new/'
     exclude = ('thanh_vien')
     edit_column =  tables.Column(accessor="pk",)
@@ -1808,6 +1827,7 @@ class SearchHistoryTable(TableReport):
 
 
 class TramTable(BaseTableForManager):
+    table_name = u'Trạm Table'
     Ngay_Phat_Song_3G = tables.DateColumn(format=D4_DATE_FORMAT_TABLE)
     Ngay_Phat_Song_2G = tables.DateColumn(format=D4_DATE_FORMAT_TABLE)
     #selection = tables.CheckBoxColumn(accessor="pk", orderable=False)
@@ -1838,6 +1858,7 @@ class Echo(object):
         """Write the value by returning it, instead of storing in a buffer."""
         return value
 class MllTable(TableReport):
+    table_name = u'Trực Ca Table'
     is_report_download = True
     edit_column = tables.Column(accessor="pk", orderable=False,verbose_name="Edit/ADD")
     gio_tot = tables.DateTimeColumn(format=TABLE_DATETIME_FORMAT)
@@ -2021,7 +2042,7 @@ class MllTable(TableReport):
     def render_edit_column(self,value):
         return mark_safe('''
         <div><button class="btn  d4btn-edit-column btn-default edit-entry-btn-on-table" id= "%s" type="button">Edit</button></div>
-        <div><a class="btn  d4btn-edit-column btn-primary show-modal-form-link add-comment" href="/omckv2/modelmanager/CommentForm/new/">Add</a></div>
+        <div><a class="btn  d4btn-edit-column btn-primary show-modal-form-link add-comment" href="/omckv2/modelmanager/CommentForm/new/">Thêm Comment</a></div>
         <div class="dropdown "><button class="btn btn-default d4btn-edit-column-dropdown dropdown-toggle dropdown-class" type="button" id="dropdownMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">More<span class="caret"></span></button> <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu"><li><a class="show-modal-form-link Nhan-Tin-UngCuu" href="/omckv2/modelmanager/NhanTinUngCuuForm/new/">Nt</a></li></ul></div>''' %value)
         
 
