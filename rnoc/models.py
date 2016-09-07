@@ -386,13 +386,12 @@ class SearchHistory(models.Model):
 class UserProfile(models.Model):
     # This line is required. Links UserProfile to a User model instance.
     user = models.OneToOneField(User)
-    ca_truc= models.ForeignKey(CaTruc,null=True,)
-    so_dien_thoai = models.CharField(max_length=20)
-    #config_ca_filter_in_mll_table = models.ManyToManyField(CaTruc,related_name='userprofile_ca_filter',blank=True,null=True)
-    color_code = models.CharField(max_length=15,null=True,blank=True)
+    ca_truc= models.ForeignKey(CaTruc,null=True,blank=True,verbose_name=u'Bạn đang trực ca nào?')
+    so_dien_thoai = models.CharField(max_length=20,null=True,blank=True,verbose_name = u"Số điện thoại")
+    color_code = models.CharField(max_length=15,null=True,blank=True,verbose_name = u"Màu hiển thị")
     khong_search_tu_dong= models.BooleanField(default = True,verbose_name = u"Không search tự động đối với table MLL")
     khong_search_tu_dong_tram= models.BooleanField(default = True,verbose_name = u"Không search tự động Trạm")
-    loc_ca = models.ManyToManyField(CaTruc,related_name = "catruc_dot_userprofile_dot_set",blank = True)
+    loc_ca = models.ManyToManyField(CaTruc,related_name = "catruc_dot_userprofile_dot_set",blank = True,verbose_name=u'Bạn muốn hiên thị ca nào?')
     def __unicode__(self):
         return self.user.username
 '''
