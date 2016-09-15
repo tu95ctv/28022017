@@ -2026,6 +2026,7 @@ class MllTable(TableReport):
         if not sp_all:
             return ''
         result = '<ul class="non-bullet-ul">'
+       
         for x in sp_all:
             result = result + '<li>' + ( '<a  href="/omckv2/modelmanager/FaultLibraryForm/%s/" class="green-color-text show-modal-form-link">'%x.fault.id + ((x.fault.Name  + '</a>**' )) if x.fault else '')\
               + ( ('<a href="/omckv2/modelmanager/SpecificProblemForm/%s/" class="show-modal-form-link">'%x.id + x.object_name + '</a>') if x.object_name else '') + '</li>'
