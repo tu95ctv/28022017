@@ -35,7 +35,7 @@ import collections
 from django_tables2_reports.csv_to_xls.xlwt_converter import write_row
 import csv
 from rnoc.models import CaTruc, ThaoTacLienQuan, NguyenNhan, Tinh, BSCRNC,\
-    SiteType, BCNOSS, UPE, BTSType, QuanHuyen
+    SiteType, BCNOSS, UPE, BTSType, QuanHuyen, DiaBan
 import random
 #from django.forms.util import ErrorList
 
@@ -51,7 +51,7 @@ VERBOSE_CLASSNAME ={'NguyenNhan':u'Nguyên Nhân','ThietBi':u'Thiết Bị','Tra
                     'Lenh':u'Lệnh','UserProfile':u'Thông tin User','FaultLibrary':u'Thư viện mã lỗi','SpecificProblem':u'Specific Problem',\
                     'SearchHistory':u'Lịch sử user tìm kiếm','DuAn':u'Dự Án','SuCo':u'Sự Cố','ThaoTacLienQuan':u'Thao Tác Liên Quan',\
                     'CaTruc':u'Ca Trực','Tinh':u'Tỉnh','BSCRNC':u'BSCRNC','DoiTac':u'Đối Tác','UPE':u'UPE','Tram_NTP':u'Tram_NTP',\
-                    'ThongKeNgayThang':u'ThongKeNgayThang'} 
+                    'ThongKeNgayThang':u'ThongKeNgayThang','DiaBan':u'Địa Bàn'} 
 ######CONSTANT
 CHOICES=[('Excel_3G','Ericsson 3G'),('Excel_to_2g','Database 2G'),\
          ('Excel_to_2g_config_SRAN','2G SRAN HCM Config'),\
@@ -60,6 +60,7 @@ CHOICES=[('Excel_3G','Ericsson 3G'),('Excel_to_2g','Database 2G'),\
          ]
 NTP_Field = ['ntpServerIpAddressPrimary','ntpServerIpAddressSecondary','ntpServerIpAddress1','ntpServerIpAddress2']       
 W_VErsion = [('W12','W12'),('W11','W11')]
+TIEN_TO_TRAM = ['ERI_3G','MOT_2G']
 #Function for omckv2
 def local_a_naitive(d,timezone = 'Asia/Bangkok'):
     eastern = pytz.timezone(timezone)
@@ -414,9 +415,9 @@ class BaseFormForManager(forms.ModelForm):
                     exclude = getattr(self.Meta, 'exclude',[])
                     if 'ngay_gio_tao'in model_fnames:
                         if 'ngay_gio_tao' in exclude:
-                            self.instance.ngay_gio_tao = datetime.now()
+                            self.instance.ngay_gio_tao = timezone.now()
                         else:
-                            self.cleaned_data['ngay_gio_tao'] = datetime.now()
+                            self.cleaned_data['ngay_gio_tao'] = timezone.now()
                     if 'nguoi_tao'in model_fnames:
                         if 'nguoi_tao' in exclude:
                             self.instance.nguoi_tao = self.request.user
@@ -561,6 +562,20 @@ class TinhForm(BaseFormForManager):
                    'ly_do_sua':forms.TextInput(attrs={"readonly":"readonly"}),\
             }   
         #exclude = ('is_duoc_tao_truoc',)
+class DiaBanForm(BaseFormForManager):
+    form_name = u'Địa Bàn Form'
+    #is_allow_edit_name_field  = True
+    id =forms.CharField(required =  False,widget = forms.TextInput(attrs={"readonly":"readonly"}))
+    ngay_gio_sua =forms.DateTimeField(label=u"Ngày giờ sửa",input_formats = [D4_DATETIME_FORMAT],required =False,widget =forms.DateTimeInput(format=D4_DATETIME_FORMAT,attrs={"readonly":"readonly"}))
+    nguoi_sua_cuoi_cung = forms.CharField(label=u"Người sửa cuối cùng",widget=forms.TextInput(attrs={"readonly":"readonly"}),required =False)
+    class Meta:
+        model = DiaBan
+        exclude = ['Name_khong_dau']
+        widgets = { 'ghi_chu': forms.Textarea,\
+                   'ly_do_sua':forms.TextInput(attrs={"readonly":"readonly"}),\
+            }   
+        #exclude = ('is_duoc_tao_truoc',)
+        
 class UPEForm(BaseFormForManager):
     #is_allow_edit_name_field  = True
     id =forms.CharField(required =  False,widget = forms.TextInput(attrs={"readonly":"readonly"}))
@@ -756,6 +771,7 @@ class  ModelManagerForm(forms.Form):
              ('/omckv2/modelmanager/UserProfileForm/new/',u'User Profile'),
              ('/omckv2/modelmanager/CaTrucForm/new/',u'Ca Trực'),
              ('/omckv2/modelmanager/TinhForm/new/',u'Tỉnh'),
+             ('/omckv2/modelmanager/DiaBanForm/new/',u'Địa bàn'),
              ('/omckv2/modelmanager/BSCRNCForm/new/',u'BSC RNC'),
              ])
     def __init__(self, *args, **kwargs):
@@ -1297,8 +1313,8 @@ class Tram_NTPForm(BaseFormForManager):
         return self.cleaned_data
     '''
 class NhanTinUngCuuForm(forms.Form):
-    noi_dung_tin_nhan = forms.CharField(widget = forms.Textarea(attrs={'class':'form-control'}))
-    group = forms.CharField(widget = forms.TextInput(attrs={'class':'form-control'}))
+    noi_dung_tin_nhan = forms.CharField(widget = forms.Textarea(attrs={'class':'form-control'}),required=False)
+    group = forms.CharField(widget = forms.TextInput(attrs={'class':'form-control'}),required=False)
     def __init__(self, *args, **kwargs):
         super(NhanTinUngCuuForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(form=self)
@@ -1470,6 +1486,13 @@ class TinhTable(BaseTableForManager):
     class Meta:
         model = Tinh
         attrs = {"class": "table-bordered"}
+class DiaBanTable(BaseTableForManager):
+    table_name = u'Địa Bàn Table'
+    jquery_url= '/omckv2/modelmanager/DiaBanForm/new/'
+    class Meta:
+        model = DiaBan
+        attrs = {"class": "table-bordered"}
+        
 class UPETable(BaseTableForManager):
     jquery_url= '/omckv2/modelmanager/UPEForm/new/'
     class Meta:

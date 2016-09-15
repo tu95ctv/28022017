@@ -1,5 +1,8 @@
-import itertools
-c=  itertools.cycle([1,2])
-print next(c)
-print next(c)
-print next(c)
+a = 2
+def x():
+    global a
+    a=3
+    print a
+
+x()
+print a

@@ -223,7 +223,7 @@ $(document).ready(function() {
             type = "GET"
             data = {}
 
-            if (class_value.indexOf('add-comment') > -1 || class_value.indexOf('Nhan-Tin-UngCuu') > -1) {
+            if (class_value.indexOf('add-command') > -1 || class_value.indexOf('Nhan-Tin-UngCuu') > -1) {
                 mll_id = $(this).closest("tr").find('td.id').html()
                 url = updateURLParameter(url, 'selected_instance_mll', mll_id)
             } else if (class_value.indexOf('force_allow_edit') > -1) {
@@ -284,7 +284,7 @@ $(document).ready(function() {
                     is_table = true
                     is_form = true
                     if (url.indexOf('CommentForm') > -1 && $(this).val() == 'ADD NEW') {
-                        hieu_ung_sau_load_form_va_table = "change style for add comment to edit comment"
+                        hieu_ung_sau_load_form_va_table = "change style for add command to edit command"
                     }
                 } else {
                     console.log('khong co table object, nhugn nut duoc bam van o trong modal')
@@ -399,10 +399,10 @@ $(document).ready(function() {
         patt = /Form\/(.*?)\//
         res = patt.exec(url)
         new_or_id = res[1]
-        if (is_form && new_or_id != 'new') {
-            update_icon_info = true
+        if (is_form && type == "POST") {
+            is_update_icon_if_edit_form = true
         } else {
-            update_icon_info = false
+            is_update_icon_if_edit_form = false
         }
         $.ajax({
             type: type,
@@ -419,7 +419,7 @@ $(document).ready(function() {
                             } else {
                                 obj = closest_wrapper.children('.form-manager')
                             }
-                            formdata = update_icon_info_function(update_icon_info, formdata)
+                            formdata = update_icon_info_after_load_edit_form(is_update_icon_if_edit_form, formdata)
                             assign_and_fadeoutfadein(obj, formdata)
                         }
 
@@ -464,7 +464,7 @@ $(document).ready(function() {
                     case 'form_on_modal': // chi xay ra trong truong hop click vao link show-modal
                         {
                             formdata = $(data).find('.wrapper-modal').html()
-                            formdata = update_icon_info_function(update_icon_info, formdata)
+                            formdata = update_icon_info_after_load_edit_form(is_update_icon_if_edit_form, formdata)
                             $("#modal-on-mll-table").html(formdata)
                             $("#modal-on-mll-table").modal()
                         }
@@ -509,8 +509,8 @@ $(document).ready(function() {
                     ca_moi_chon = closest_wrapper.find('select#id_ca_truc option:selected').html()
                     console.log('@@@@ca_moi_chon', ca_moi_chon)
                     $('span#ca-dang-truc').html('Ca ' + ca_moi_chon)
-                } else if (hieu_ung_sau_load_form_va_table == "change style for add comment to edit comment") {
-                    dtuong = $('#modal-on-mll-table h4.add-comment-modal-title')
+                } else if (hieu_ung_sau_load_form_va_table == "change style for add command to edit command") {
+                    dtuong = $('#modal-on-mll-table h4.add-command-modal-title')
                     dtuong.css("background-color", "#ec971f")
                 } else if (hieu_ung_sau_load_form_va_table == 'input text to Name field') {
                     $('div#manager-modal input#id_Name').val(input_text_to_Name_field)
@@ -693,7 +693,7 @@ $(document).ready(function() {
         $(this).autocomplete({
                 create: function() {
                     $(this).data('ui-autocomplete')._renderItem = function(ul, item) {
-                        return $('<li>').append(
+                        return $('<li class="li-select-in-autocomplete-result">').append(
                                 $('<div>').append('<b>' + '<span class="greencolor">' + item.sort_field + ":</span>" + '<span class="">' + item.label + '</span>' + '</b>')
                                 .append('<div class="table-type-wrapper">'+
                                     '<div  class="wrapper-a-tr"><div class="wrapper-dt-autocomplete" >' + '<span class="tram_field_name">SN1: </span>' + '<span class="chontram" type-tram = "SN1" type-thiet-bi = "2G&3G">' + item.sn1 + '</span>' + '</div>' + '<div class="wrapper-dt-autocomplete" >' + '<span class="tram_field_name">SN2: </span>' + '<span class="chontram" type-tram = "SN2" type-thiet-bi = "2G&3G">' + item.sn2 + '</span>' + '</div></div>' +
@@ -725,10 +725,12 @@ $(document).ready(function() {
                     })
                 },
                 select: function(event, ui) {
-
-                    if ($(event.toElement).attr('class') == 'chontram') {
-                        sort_field = $(event.toElement).attr('type-tram')
-                        thiet_bi = $(event.toElement).attr('type-thiet-bi')
+                    doituongvuaclick = $(event.toElement)
+                    console.log('doituongvuaclick class',doituongvuaclick.attr('class'))
+                    if (doituongvuaclick.attr('class') == 'chontram') {
+                        sort_field = doituongvuaclick.attr('type-tram')
+                        console.log('sort_field',sort_field)
+                        thiet_bi = doituongvuaclick.attr('type-thiet-bi')
                         value_select = event.toElement.innerText
 
                     } else {
@@ -751,13 +753,17 @@ $(document).ready(function() {
                     }
                     if (name_attr_global == "object") {
                         $('#id_site_name').val(ui.item.site_name_1)
-                        $('#mll-form-table-wrapper input#id_thiet_bi').val(thiet_bi)
+                        thiet_bi_input_text = $('#mll-form-table-wrapper input#id_thiet_bi')
+                        thiet_bi_input_text.val(thiet_bi)
+                        dtuong = thiet_bi_input_text.closest('.input-group').find('.glyphicon')
+                        show_only_glyphicon(dtuong, 'glyphicon-info-sign')
+
                     }
-                    console.log('option_khong_tu_dong_search_tram', option_khong_tu_dong_search_tram)
                     option_khong_tu_dong_search_tram = $('input#id_khong_search_tu_dong_tram').prop('checked')
                     if (!(option_khong_tu_dong_search_tram && name_attr_global == "object")) {
                         form_table_handle(event, 'intended_for_autocomplete', '/omckv2/modelmanager/TramForm/' + ui.item.id + '/?tramid=' + ui.item.id, sort_field)
                     }
+
                     return false // return thuoc ve select :
                 }
 
@@ -810,12 +816,13 @@ $(document).ready(function() {
     //LENH Chon lenh
     var counter = 0;
     $(this).on('click', 'table.lenh-table > tbody >tr >td.selection>input[type=checkbox] ', function() {
-        chosing_row_id = $(this).closest("tr").find('td.id').html()
-        console.log('chosing_row_id', chosing_row_id, $(this).is(':checked'))
-        is_check = !$(this).is(':checked')
+        this_check_box = $(this)
+        chosing_row_id = this_check_box.closest("tr").find('td.id').html()
+        is_check_state_before_click = this_check_box.is(':checked')
+        console.log('is_check',is_check_state_before_click)
         if (false) { /* bo chon 1 row*/
             console.log(chosing_row_id)
-            $("table#myTable").find("td.id").filter(function() {
+            $("table#selected-lenh-table").find("td.id").filter(function() {
                 var id = $(this).html();
                 if (id == chosing_row_id) {
                     $(this).parent().remove();
@@ -823,33 +830,30 @@ $(document).ready(function() {
                     if (index > -1) {
                         choosed_command_array_global.splice(index, 1);
                     }
-                    counter = $('#myTable tr').length - 1;
+                    counter = $('#selected-lenh-table tr').length - 1;
                     console.log('ban da bo chon 1 row lenh', choosed_command_array_global)
                 }
             }) /* close brace for filter function*/
 
         } /* close if*/
         else {
-            $(this).prop("checked", true)
+            this_check_box.prop("checked", true)
             counter = counter + 1
-
             var newrowcopy = $('<tr>');
-
-
-            $(this).closest("tr").children().each(function(i, v) {
-                if (!$(this).hasClass("selection") && i < 6) { /*BO CHON NHUNG CAI SELECTION*/
-                    var thishtml = $(this).prop('outerHTML') //cu
-                    newrowcopy.append(thishtml)
+            this_check_box.closest("tr").find('td').each(function(i, v) {
+                this_td = $(this)
+                if (!this_td.hasClass("selection") && i <5) { /*khong add nhung selection data*/
+                    var this_td_html = $(this).prop('outerHTML') //cu
+                    newrowcopy.append(this_td_html)
 
                 }
             });
 
-            comment = $(this).closest('tr').find('td.command').html()
-
+            command = this_check_box.closest('tr').find('td.command').html()
             var reg = /\[(thamso.*?)\]/g;
             var matches_thamso_attribute_sets = []
             var found
-            while (found = reg.exec(comment)) {
+            while (found = reg.exec(command)) {
                 console.log('found.index', found.index, 'found', found, '\nreg.lastIndex', reg.lastIndex)
                 matches_thamso_attribute_sets.push(found[1]);
                 reg.lastIndex = found.index + 1;
@@ -864,7 +868,7 @@ $(document).ready(function() {
                 }))
 
             })
-            if (comment.indexOf('[TG]') > -1) {
+            if (command.indexOf('[TG]') > -1) {
                 newtd.append($('<p>').html('chon TG 1800'))
                 newtd.append($('<input/>').attr({
                     type: 'checkbox',
@@ -873,7 +877,7 @@ $(document).ready(function() {
             }
             newtd.append('<div><input type="button" class="ibtnDel"  value="Delete"><input type="button" class="move up"  value="Up"><input type="button" class="move down"  value="Down"></div></td>')
             newrowcopy.append(newtd);
-            $("table#myTable>tbody").append(newrowcopy)
+            $("table#selected-lenh-table>tbody").append(newrowcopy)
             choosed_command_array_global.push(chosing_row_id)
             console.log(choosed_command_array_global)
         }
@@ -882,12 +886,12 @@ $(document).ready(function() {
 
 
     // LENH xoa 1 lenh trong table chon lenh
-    $("table#myTable").on("click", ".ibtnDel", function(event) {
+    $("table#selected-lenh-table").on("click", ".ibtnDel", function(event) {
         is_ton_tai_them_1_tr_id = false
         tr_id = $(this).closest("tr").find('td.id').html()
         $(this).closest("tr").remove();
 
-        $("table#myTable").find('tbody tr td.id').each(function() {
+        $("table#selected-lenh-table").find('tbody tr td.id').each(function() {
             if (this.html() == tr_id) {
                 is_ton_tai_them_1_tr_id = true
             }
@@ -907,14 +911,13 @@ $(document).ready(function() {
         $('.tram-table > tbody > tr').each(function() {
             var command_set_one_tram = "";
             var tram_row = $(this)
-            $('#myTable > tbody > tr').each(function() {
+            $('#selected-lenh-table > tbody > tr').each(function() {
                 tr = $(this)
                 var one_command = $(this).find('td.command').html();
                 var reg = /\[(.+?)\]/g;
                 var matches_tram_attribute_sets = []
                 var found
                 while (found = reg.exec(one_command)) {
-                    console.log('found.index', found.index, 'found', found, '\nreg.lastIndex', reg.lastIndex)
                     matches_tram_attribute_sets.push(found[1]);
                     reg.lastIndex = found.index + 1;
                 }
@@ -948,7 +951,7 @@ $(document).ready(function() {
     });
 
 
-    $(this).on('click', 'table#myTable tbody tr td input.move', function() {
+    $(this).on('click', 'table#selected-lenh-table tbody tr td input.move', function() {
         var row = $(this).closest('tr');
         if ($(this).hasClass('up'))
             row.prev().before(row);
@@ -1121,7 +1124,7 @@ $(document).ready(function() {
     
     $(this).ajaxComplete(function(event, xhr, settings) {
         $("#loading").hide();
-        $('.datetimepicker-comment').datetimepicker({
+        $('.datetimepicker-command').datetimepicker({
             format: DT_FORMAT
         });
 
@@ -1155,8 +1158,8 @@ function extractLast(term) {
     return split(term).pop();
 }
 
-function update_icon_info_function(update_icon_info, formdata_html_text) {
-    if (update_icon_info) {
+function update_icon_info_after_load_edit_form(is_update_icon_if_edit_form, formdata_html_text) {
+    if (is_update_icon_if_edit_form) {
         formdata = $(formdata_html_text)
         formdata.find('.glyphicon-plus').each(function(index) {
             near_input = $(this).closest('.input-group').find('input[type=text]')

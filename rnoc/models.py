@@ -61,7 +61,7 @@ class DuAn(models.Model):
     type_2G_or_3G = models.CharField(max_length=2,blank=True)
     thoi_diem_bat_dau= models.DateTimeField(null=True,blank=True,verbose_name=u"thời điểm bắt đầu")#3
     thoi_diem_ket_thuc= models.DateTimeField(null=True,blank=True,verbose_name=u"thời điểm kết thúc")#3
-    doi_tac_du_an = models.ManyToManyField(DoiTac,null=True,blank=True,verbose_name = u'Đối tác dự án')
+    doi_tac_du_an = models.ManyToManyField(DoiTac,blank=True,verbose_name = u'Đối tác dự án')
     is_duoc_tao_truoc = models.BooleanField(default = False,verbose_name=u"Không cho phép sửa field Name")
     #default = User.objects.get(username = "tund").id
     nguoi_tao = models.ForeignKey(User,related_name='user_nguoi_tao_dot_duan_set',blank=True,verbose_name=u"Người tạo")
@@ -81,11 +81,9 @@ class SuCo (models.Model):
     Name_khong_dau = models.CharField(max_length=80,null=True)
     color_code = models.CharField(max_length=15,null=True,blank=True)
     ghi_chu = models.CharField(max_length=10000,null=True,blank=True,verbose_name = u'Ghi Chú'   ) 
-
-    
     nguoi_tao = models.ForeignKey(User,related_name='user_nguoi_tao_dot_nguyennhan_set',blank=True,verbose_name=u"Người tạo")
     nguoi_sua_cuoi_cung = models.ForeignKey(User,null=True,related_name='user_nguoi_sua_dot_nguyennhan_set',blank=True,verbose_name=u"người sửa cuối cùng")
-    ngay_gio_tao= models.DateTimeField(default=timezone.now(),verbose_name=u"Ngày giờ tạo",blank=True)#3
+    ngay_gio_tao= models.DateTimeField(default=timezone.now,verbose_name=u"Ngày giờ tạo",blank=True)#3
     ngay_gio_sua= models.DateTimeField(null=True,verbose_name=u"Ngày giờ sửa cuối cùng",blank=True)#3
     ly_do_sua= models.CharField(max_length=100,blank=True,verbose_name=u"Lý do sửa")
     
@@ -99,7 +97,7 @@ class NguyenNhan (models.Model):
     
     nguoi_tao = models.ForeignKey(User,related_name='user_nguoi_tao_dot_NguyenNhan_set',blank=True,verbose_name=u"Người tạo")
     nguoi_sua_cuoi_cung = models.ForeignKey(User,null=True,related_name='user_nguoi_sua_dot_NguyenNhan_set',blank=True,verbose_name=u"người sửa cuối cùng")
-    ngay_gio_tao= models.DateTimeField(default=timezone.now(),verbose_name=u"Ngày giờ tạo",blank=True)#3
+    ngay_gio_tao= models.DateTimeField(default=timezone.now,verbose_name=u"Ngày giờ tạo",blank=True)#3
     ngay_gio_sua= models.DateTimeField(null=True,verbose_name=u"Ngày giờ sửa cuối cùng",blank=True)#3
     ly_do_sua= models.CharField(max_length=100,blank=True,verbose_name=u"Lý do sửa")
     
@@ -176,26 +174,40 @@ class Lenh(models.Model):
     
     def __unicode__(self):
         return self.command
-class Tinh(models.Model):
+    
+class DiaBan(models.Model):
     Name= models.CharField(max_length=50,unique=True)#3
     Name_khong_dau = models.CharField(max_length=50,blank=True,unique=True)
-    dia_ban = models.CharField(max_length=80,verbose_name=u"Địa bàn",blank=True)
-    ma_tinh = models.CharField(max_length=4,unique=True)
+    ky_hieu = models.CharField(max_length=50)#3
     ghi_chu = models.CharField(max_length=10000,null=True,blank=True,verbose_name = u'Ghi Chú')
     so_luong_tram_2G = models.IntegerField(null=True,blank=True)
     so_luong_tram_3G = models.IntegerField(null = True,blank=True)
-    tong_so_tram = models.IntegerField(null = True,blank=True)
-    #adfd
-    '''
-    so_tram_2G = models.IntegerField(null=True,blank = True)
-    so_tram_3G = models.IntegerField(null=True,blank = True)
-    so_tram_4G = models.IntegerField(null=True,blank = True)
-    '''
+    nguoi_sua_cuoi_cung = models.ForeignKey(User,null=True,related_name='user_nguoi_sua_dot_diaban_set',blank=True,verbose_name=u"người sửa cuối cùng")
+    ngay_gio_sua= models.DateTimeField(null=True,verbose_name=u"Ngày giờ sửa cuối cùng",blank=True)#3
+    ly_do_sua= models.CharField(max_length=100,blank=True,verbose_name=u"Lý do sửa")
+    def __unicode__(self):
+        return self.Name
+    
+    
+class Tinh(models.Model):
+    Name= models.CharField(max_length=50,unique=True)#3
+    Name_khong_dau = models.CharField(max_length=50,blank=True,unique=True,verbose_name = u'Name không dấu')
+    #dia_ban = models.CharField(max_length=50)
+    dia_ban = models.ForeignKey(DiaBan,null=True,verbose_name = u'Địa Bàn')
+    ma_tinh = models.CharField(max_length=4,unique=True,verbose_name = u'Mã Tỉnh')
+    ghi_chu = models.CharField(max_length=10000,null=True,blank=True,verbose_name = u'Ghi Chú')
+    so_luong_tram_2G = models.IntegerField(null=True,blank=True,verbose_name = u'Số lượng trạm 2G')
+    so_luong_tram_3G = models.IntegerField(null = True,blank=True,verbose_name = u'Số lượng trạm 3G')
+    tong_so_tram = models.IntegerField(null = True,blank=True,verbose_name = u'Tổng số lượng trạm')
     nguoi_sua_cuoi_cung = models.ForeignKey(User,null=True,related_name='user_nguoi_sua_dot_Tinh_set',blank=True,verbose_name=u"người sửa cuối cùng")
     ngay_gio_sua= models.DateTimeField(null=True,verbose_name=u"Ngày giờ sửa cuối cùng",blank=True)#3
     ly_do_sua= models.CharField(max_length=100,blank=True,verbose_name=u"Lý do sửa")
     def __unicode__(self):
         return self.Name
+    
+
+    
+    
 class BSCRNC(models.Model):
     Name = models.CharField(max_length=50,unique=True)
     HANG_SX = models.CharField(max_length=20,null=True,blank=True)
@@ -290,7 +302,7 @@ class Tram(models.Model):
     ntpServerIpAddressSecondary = models.CharField(max_length=20,null=True,blank = True,)
     ntpServerIpAddress1 = models.CharField(max_length=20,null=True,blank = True,)
     ntpServerIpAddress2 = models.CharField(max_length=20,null=True,blank = True,)
-    du_an = models.ManyToManyField(DuAn,null=True,blank=True,verbose_name =u"Dự án")
+    du_an = models.ManyToManyField(DuAn,blank=True,verbose_name =u"Dự án")
     eNodeB_Name = models.CharField(max_length=40,null=True,blank = True,)#35
     eNodeB_ID_DEC = models.CharField(max_length=6,null=True,blank = True)
     eNodeB_Type = models.ForeignKey(ThietBi,null=True,blank = True,related_name='ThietBi_of_eNodeB')#12
@@ -304,7 +316,7 @@ class Tram(models.Model):
     
     nguoi_tao = models.ForeignKey(User,related_name='user_nguoi_tao_dot_tram_set',blank=True,verbose_name=u"Người tạo")
     nguoi_sua_cuoi_cung = models.ForeignKey(User,null=True,related_name='user_nguoi_sua_dot_tram_set',blank=True,verbose_name=u"người sửa cuối cùng")
-    ngay_gio_tao= models.DateTimeField(default=timezone.now(),verbose_name=u"Ngày giờ tạo",blank=True)#3
+    ngay_gio_tao= models.DateTimeField(default=timezone.now,verbose_name=u"Ngày giờ tạo",blank=True)#3
     ngay_gio_sua= models.DateTimeField(null=True,verbose_name=u"Ngày giờ sửa cuối cùng",blank=True)#3
     ly_do_sua= models.CharField(max_length=100,blank=True,verbose_name=u"Lý do sửa")
     
@@ -369,7 +381,7 @@ class Comment(models.Model):
     comment= models.CharField(max_length=2000,null=True,blank=True)# if bo blank=False mac dinh se la true chelp_text="add comment here",
     #comment= RichTextField(max_length=2000,null=True,blank=True)# if bo blank=False mac dinh se la true chelp_text="add comment here",
     trang_thai = models.ForeignKey(TrangThai,blank=True,verbose_name=u"Trạng thái")
-    thao_tac_lien_quan = models.ManyToManyField(ThaoTacLienQuan,blank=True,null=True)
+    thao_tac_lien_quan = models.ManyToManyField(ThaoTacLienQuan,blank=True)
     
     nguoi_tao = models.ForeignKey(User,related_name='user_nguoi_tao_dot_comment_set',blank=True,verbose_name=u"Người tạo")
     nguoi_sua_cuoi_cung = models.ForeignKey(User,null=True,related_name='user_nguoi_sua_dot_comment_set',blank=True,verbose_name=u"người sửa cuối cùng")

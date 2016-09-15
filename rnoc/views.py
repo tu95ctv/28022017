@@ -4,6 +4,7 @@
 import sys  
 import os
 from django.utils.datastructures import MultiValueDictKeyError
+from unidecode import unidecode
 reload(sys)  
 sys.setdefaultencoding('utf-8')
 from django.db.models import F,Sum,IntegerField,FloatField
@@ -360,9 +361,12 @@ def annotation_for_thongkengaythang (bcns_objects,is_groups,is_include_code_8 = 
 def init(request):
     init_rnoc()
     return HttpResponse('ok')
-
+so_luong_truy_suat = 0
 @login_required
 def omckv2(request):
+    global so_luong_truy_suat
+    so_luong_truy_suat +=1
+    print 'so_luong_truy_suat',so_luong_truy_suat
     tramform = TramForm()
     mllform = MllForm()
     commandform = LenhForm()
@@ -606,12 +610,33 @@ def modelmanager(request,modelmanager_name,entry_id):
         
         if form_name =='NhanTinUngCuuForm':# only form not model form
             mll_instance = Mll.objects.get(id = request.GET['selected_instance_mll'])
-            noi_dung_tin_nhan = 'Bao ung cuu tram ' + mll_instance.object + show_string_avoid_none(mll_instance.site_name,'({0})') + show_string_avoid_none(mll_instance.su_co, '. Nguyen nhan: {0}') \
-            +show_string_avoid_none(mll_instance.thiet_bi,'. Thiet bi:{0}')
-            matinh_in_sitename = mll_instance.site_name[-3:]
-            #print '@@@matinh_in_sitename',matinh_in_sitename
+            tram_2g_or_3g = re.search('_([2,3,4]G)_',mll_instance.object)
+            if tram_2g_or_3g :
+                mll_instance_object = mll_instance.object[7:]  
+                tram_2g_or_3g_text = tram_2g_or_3g.group(1)
+            else:
+                mll_instance_object = mll_instance.object
+                tram_2g_or_3g_text=''
+            
+            if mll_instance.site_name not in mll_instance_object:
+                mll_instance_object +=' (' + show_string_avoid_none(mll_instance.site_name,'{0}') + ')'
+            if tram_2g_or_3g_text =='3G':
+                tram_2g_or_3g_text = 'Node B'
+            elif tram_2g_or_3g_text:
+                tram_2g_or_3g_text = 'Tram ' + tram_2g_or_3g_text
+            else:
+                tram_2g_or_3g_text = ''
             try:
-                dia_ban = Tinh.objects.get(ma_tinh = matinh_in_sitename).dia_ban
+                thietbi = show_string_avoid_none(unidecode(mll_instance.thiet_bi.Name),'. Thiet bi: {0}.') 
+            except AttributeError: #Nonetype
+                thietbi = ''
+            noi_dung_tin_nhan = 'Bao ung cuu: ' + tram_2g_or_3g_text + ' ' + mll_instance_object + \
+            show_string_avoid_none(unidecode(mll_instance.su_co.Name), '. Nguyen nhan: {0}') + \
+            thietbi
+            
+            matinh_in_sitename = mll_instance.site_name[-3:]
+            try:
+                dia_ban = Tinh.objects.get(ma_tinh = matinh_in_sitename).dia_ban.ky_hieu
             except Tinh.DoesNotExist:
                 dia_ban =''
             group = (u'NET2_UC_' + dia_ban) if dia_ban else ''
@@ -652,9 +677,7 @@ def modelmanager(request,modelmanager_name,entry_id):
                         karg = {'Site_Name_1':entry_id}
                     else:
                         if ModelOfForm_Class_name == "ThaoTacLienQuan":
-                            print 'entry_identry_id#@@#$@$#',entry_id
                             entry_ids = entry_id.split(',')
-                            print 'entry_ids#@@#$@$#',entry_ids
                             entry_ids.reverse()
                             for x in entry_ids:
                                 x = x.rstrip().lstrip()
@@ -731,9 +754,9 @@ def modelmanager(request,modelmanager_name,entry_id):
 
                     id_string =  str(instance.id)
                     if entry_id =="new":
-                        form_notification = u'<span class="form-notification text-success">Bạn vừa tạo thành công 1 Đối tượng <span class="name-class-notification">%s</span> có ID là %s,bạn có thế tiếp tục edit nó</span>'%(VERBOSE_CLASSNAME[ModelOfForm_Class_name],id_string)
+                        form_notification = u'<span class="form-notification text-success">Bạn vừa tạo thành công 1 Đối tượng <span class="name-class-notification">%s</span> có ID là %s.</span>'%(VERBOSE_CLASSNAME[ModelOfForm_Class_name],id_string)
                     else:
-                        form_notification = u'<span class="form-notification text-success">Bạn vừa Edit thành công 1 Đối tượng <span class="name-class-notification">%s</span>  có ID là %s,bạn có thế tiếp tục edit nó</span>'%(VERBOSE_CLASSNAME[ModelOfForm_Class_name],id_string)
+                        form_notification = u'<span class="form-notification text-success">Bạn vừa Edit thành công 1 Đối tượng <span class="name-class-notification">%s</span>  có ID là %s.</span>'%(VERBOSE_CLASSNAME[ModelOfForm_Class_name],id_string)
                     #reload form with newinstance
                     form = FormClass(instance = instance,request=request,khong_show_2_nut_cancel_va_loc=khong_show_2_nut_cancel_va_loc)###############3
                 #if not is_download_table:
@@ -912,7 +935,7 @@ def modelmanager(request,modelmanager_name,entry_id):
         else: # if !loc and ...
             
             querysets = ModelofTable_Class.objects.all().order_by('-id')
-            table_notification = u'<span class="table_notification">Tất cả  đối tượng <span class="soluong-notif">(%s)</span> trong database <span class="name-class-notification">%s</span> được hiển thị ở table bên dưới</span>'%(len(querysets),VERBOSE_CLASSNAME[ModelofTable_Class_name])
+            table_notification = u'<span class="table_notification">Tất cả <span class="soluong-notif">(%s)</span>  đối tượng trong database <span class="name-class-notification">%s</span> được hiển thị ở table bên dưới</span>'%(len(querysets),VERBOSE_CLASSNAME[ModelofTable_Class_name])
         if table_name=='MllTable':
             try:
                 loc_cas = request.GET['loc_ca']

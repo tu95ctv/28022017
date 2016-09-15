@@ -1,3 +1,9 @@
+.glyphicon-info-sign {
+	color:green;
+}
+.glyphicon-log-in {
+	color:red;
+}
 .table-name {
 	margin: 0 30px 0 0px;
 	text-align: center;
@@ -755,9 +761,7 @@ table.tram-table tbody td {
 	
 }*/
 #mll-form-table-wrapper  .tablemll {
-	
 	width:1550px;
-	
 	table-layout: fixed;
 	word-wrap:break-word;
 }

@@ -4,7 +4,12 @@ import os
 from LearnDriving.settings import TIME_ZONE
 SETTINGS_DIR = os.path.dirname(__file__)
 MEDIA_ROOT = os.path.join(SETTINGS_DIR, 'media')
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'LearnDriving.settings')
+import django 
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "LearnDriving.settings")
+django.setup()
+
+
+#os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'LearnDriving.settings')
 from django.db.models import Q,F
 import xlrd,datetime
 from django.core.exceptions import MultipleObjectsReturned
@@ -31,7 +36,7 @@ from rnoc.forms import D4_DATETIME_FORMAT, D4_DATE_ONLY_FORMAT
 from rnoc.models import Tram, Mll, DoiTac, SuCo,\
     CaTruc, UserProfile, TrangThai, DuAn, ThaoTacLienQuan, ThietBi,\
     EditHistory, Lenh, FaultLibrary, NguyenNhan, Tinh, BSCRNC,\
-    SiteType, BCNOSS, BTSType, UPE, QuanHuyen
+    SiteType, BCNOSS, BTSType, UPE, QuanHuyen, DiaBan
 
 
 DATE_FORMAT_FOR_BCN = '%d/%m/%Y'
@@ -286,6 +291,7 @@ class Excel_2_3g(object):
                     value = to_value_function(value)
                     if value==None:#to_value_function chu dong tra ve None neu khong muon luu field
                         continue
+                print 'field la **',field
                 setattr(self.obj, field, value) # save
            
         self.obj.save()        
@@ -776,7 +782,11 @@ class ImportTinh_diaban(Excel_2_3g):
     manual_mapping_dict = {'Name':u'Khu vực','dia_ban' :u'Địa bàn','ghi_chu':u'Trực UCTT'}
     model = Tinh
     worksheet_name = u'Sheet3'
-    update_or_create_main_item = 'Name'    
+    update_or_create_main_item = 'Name'  
+    def value_for_dia_ban(self,value):
+        print 'in value dia ban',value
+        dia_ban_instance = DiaBan.objects.get(Name = value)
+        return dia_ban_instance
 class ImportRNC(Excel_2_3g):
     auto_map = True
     fields_allow_empty_use_function = ['nguoi_tao','ngay_gio_tao','import_ghi_chu']
@@ -1283,7 +1293,22 @@ def create_user():
             profile.ca_truc = ca_truc
             profile.save()
  
-
+def create_diaban():
+    data = {u'Miền Đông':{'ky_hieu':'DNB'},u'Bắc Sông Hậu':{'ky_hieu':u'Bắc Sông Hậu'}\
+            ,u'Nam Sông Hậu':{'ky_hieu':u'Nam Sông Hậu'},u'Hồ Chí Minh':{'ky_hieu':u'HCM'}
+            }
+    for k,v in data.iteritems():
+        look_dict = {'Name':k}
+        update_dict = {'Name':k,'ky_hieu':v['ky_hieu'],"Name_khong_dau":unidecode(k)}
+        try:
+            instance = DiaBan.objects.get(**look_dict)
+            print 'da co',update_dict
+        except DiaBan.DoesNotExist:
+            instance = DiaBan(**update_dict)
+            instance.save()
+            print 'da save',update_dict
+            
+            
 def grant_permission_to_group():
     content_type = ContentType.objects.get_for_model(Mll)
     name_and_codes = [('d4_create_truc_ca_permission','Can truc ca'),('can add on modal code','can add on modal')]
@@ -1854,11 +1879,13 @@ def set_password_for_user(str_username,new_pass):
     u.save()
     print u'đã reset password thành công cho username %s'%str_username
 if __name__ == '__main__':
-    set_password_for_user('tund','228787')
-    #import django
-    #django.setup()
-    '''
+    #set_password_for_user('tund','228787')
+    #create_diaban()
+    user = User.objects.get(username = 'ductu').userprofile.ca_truc
+    print user
     
+    #import_database_4_cai_new(['ImportTinh_diaban'] )
+    '''
     so_tram_cho_tinh()
     so_tram_cho_RNC()
     '''

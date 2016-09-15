@@ -20,7 +20,7 @@ def luu_doi_tac_toold4(doi_tac_inputext,user_tao=None,is_save_doitac_if_not_exit
                 doi_tac_inputexts = doi_tac_inputext.split('*')
                 doi_tac_inputexts = [x.lstrip().rstrip() for x in doi_tac_inputexts ]
                 sdt_fieldname = fieldnames.pop(2)# sdt_fieldname =sdt_fieldname
-                p = re.compile(r'[\d\s]{3,}') #digit hoac space lon hon 3 kytu lien tiep
+                p = re.compile(r'\d[\d\s]{3,}') #digit hoac space lon hon 3 kytu lien tiep
                 kq= p.search(doi_tac_inputext)
                 try:
                     phone_number_index_of_ = kq.start()
