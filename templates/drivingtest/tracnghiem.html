@@ -1,0 +1,25 @@
+{% extends 'drivingtest/base.html' %}
+{% load render_table from django_tables2 %}
+{% load get_current_time%}
+{% block title %}OMCKV2-Home page{% endblock %}
+{% block body_block %}
+{% load crispy_forms_tags %}
+<!-- Modal -->
+<!--####-->
+<div class="container-fluid main-body-page">
+   <h2> Trắc Nghiệm Page</h2>
+   {% for one_trac_nghiem in trac_nghiem_lists %}
+      <h4 style ="color:blue">{{ forloop.counter0 }}){{one_trac_nghiem.cau_hoi}}<h4>
+         {% if one_trac_nghiem.is_multiple_choice %}
+         <p style="color:green">Chọn nhiều đáp án:</p>
+         {%else%}
+         Chọn 1 đáp án:
+         {% endif %}
+        {% for dap_an in one_trac_nghiem.dap_an.all %} 
+         <p>{{ forloop.counter0 }}) - {{dap_an.Name}}</p>
+        {% endfor %}
+   {% endfor %}
+</div>
+<!-- end container-->
+
+{% endblock %}

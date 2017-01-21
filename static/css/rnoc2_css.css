@@ -1,3 +1,11 @@
+.time-notice {
+	color:green;
+}
+.underline {
+	font-style: italic;
+	/*text-decoration: underline;*/
+	color: #A8A5A0;
+}
 .glyphicon-info-sign {
 	color:green;
 }
@@ -64,7 +72,9 @@ table.tablemll   .edit_column .add-comment {
 
 }
 
-
+#thongke > #center{
+	 margin-right: auto; margin-left: auto; width: 800px;
+}
 .footer-copyright {
 	background: #2E2F33;
 	padding-top: 15px;
@@ -100,6 +110,9 @@ table.tablemll   .edit_column .add-comment {
 	color:red;
 }
 #div_id_BSC_2G {
+	color:purple;
+}
+#div_id_booster {
 	color:green;
 }
 select[name=BSC_2G] {
@@ -154,22 +167,22 @@ th.du_an,th.gio_mat,th.gio_tot{
 }
 
 
-th.ung_cuu,th.giao_ca,th.nghiem_trong  {
+th.ung_cuu,th.giao_ca,th.nghiem_trong,th.chap_chon   {
 	width:2%;
 }
 th.trang_thai{
-	width:10%;
-}
-
-th.nguyen_nhan,th.site_name,th.subject{
-  width: 7%;
-}
-th.specific_problem {
 	width:8%;
 }
 
+th.nguyen_nhan,th.nguyen_nhan_cu_the,th.site_name,th.subject{
+  width: 5%;
+}
+th.specific_problem {
+	width:7%;
+}
+
 th.cac_buoc_xu_ly{
-  width: 17%;
+  width: 16%;
 }
 
 #mll-form-table-wrapper th.edit_comlumn {
@@ -177,6 +190,9 @@ th.cac_buoc_xu_ly{
 }
 
 
+th.brand,th.type_2g_or_3g{
+  width: 2%;
+}
 
 
 
@@ -269,9 +285,6 @@ ul.comment-ul li:first-child {
 	border-top: none; 
 }
 
-ul.comment-ul li a {
-	color:red;
-}
 ul.comment-ul li a:visited { 
     color: pink;
 }
@@ -315,7 +328,7 @@ table.tablemll {
 	margin:0px 30px;
 }
 td.cac_buoc_xu_ly span.thanh-vien-comment {
-	color:#ff1a75;
+	color:#F29E83;
 }
 td.cac_buoc_xu_ly span.comment-time {
 	color:green;
@@ -407,8 +420,8 @@ div.danh-sach-tram-tim-kiem {
 }
 */
 td a.contact-on-table :visited,td a.contact-on-table:link {
-	color:#660066;
-	/*font-style: italic;*/
+	/*color:#660066;
+	font-style: italic;*/
 	font-weight: normal;
 }
 
@@ -416,7 +429,8 @@ td a.contact-on-table :visited,td a.contact-on-table:link {
 
 	width:100%;
 }
-.comment-row-0 {
+.comment-ul .comment {
+	color:pink;
 
 }
 .gio_mat {
@@ -760,6 +774,7 @@ table.tram-table tbody td {
 	height: 650px;
 	
 }*/
+
 #mll-form-table-wrapper  .tablemll {
 	width:1550px;
 	table-layout: fixed;
@@ -839,4 +854,8 @@ table#tram-table-id thead tr th.Site_Name_1 {
 }
 td.cot1,table>thead>tr>th.cot1{
 	background-color: #b3e6ff;
+}
+
+td[classf="cot1"],table>thead>tr>th[classf="cot1"]{
+	background-color: #F7E9E4;
 }

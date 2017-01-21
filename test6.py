@@ -1,3 +1,4 @@
 import re
-string = u'anh yeu me'
-re.sub(u'anh (yeu)','ghet',string)
+rs = re.search('^(.*?) ','4G_PQU048A_KGG (B? AT)')
+if rs:
+    print rs.group(1)

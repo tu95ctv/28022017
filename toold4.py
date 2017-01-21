@@ -3,31 +3,30 @@ import re
 import datetime
 import os
 
-'''
+
 SETTINGS_DIR = os.path.dirname(__file__)
 MEDIA_ROOT = os.path.join(SETTINGS_DIR, 'media')
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'LearnDriving.settings')
 
-'''
-from rnoc.models import DoiTac
+
+from rnoc.models import DoiTac, SLASH_DISTINCTION
 #from LearnDriving.settings import MYD4_LOOKED_FIELD
 
 def luu_doi_tac_toold4(doi_tac_inputext,user_tao=None,is_save_doitac_if_not_exit=False):
-            if "*" not in doi_tac_inputext:
+            if SLASH_DISTINCTION not in doi_tac_inputext:
                 dictx = {'Name':doi_tac_inputext}
             else: # if has - 
                 fieldnames= ['Name','Don_vi','So_dien_thoai']
-                doi_tac_inputexts = doi_tac_inputext.split('*')
+                doi_tac_inputexts = doi_tac_inputext.split(SLASH_DISTINCTION)
                 doi_tac_inputexts = [x.lstrip().rstrip() for x in doi_tac_inputexts ]
                 sdt_fieldname = fieldnames.pop(2)# sdt_fieldname =sdt_fieldname
                 p = re.compile(r'\d[\d\s]{3,}') #digit hoac space lon hon 3 kytu lien tiep
                 kq= p.search(doi_tac_inputext)
                 try:
                     phone_number_index_of_ = kq.start()
-                    #Define the index of number phone in array, 0 or 1, or 2, or 3
-                    index_of_sdt_in_list = len(re.findall(r'\*',doi_tac_inputext[:phone_number_index_of_]))# jush count bao nhieu dau * truoc so dien thoai
+                    index_of_sdt_in_list = len(re.findall(SLASH_DISTINCTION,doi_tac_inputext[:phone_number_index_of_]))# jush count bao nhieu dau * truoc so dien thoai
                     fieldnames.insert(index_of_sdt_in_list, 'So_dien_thoai')
-                except:
+                except AttributeError:#'NoneType' object has no attribute 'start'
                     pass
                 dictx = dict(zip(fieldnames,doi_tac_inputexts))
             doitacs = DoiTac.objects.filter(**dictx)
@@ -82,10 +81,32 @@ def recognize_fieldname_of_query(contain,fieldnames):
     else:
         is_negative_query = False
     return (fieldname,contain,is_negative_query)
+def create_a_list_from_row_string(stringss):
+    outs = stringss.split('\n')
+    out_put = u','.join(['"' + x +'"' for x in outs if len(x)>1])
+    return out_put
+    
 def prepare_value_for_specificProblem(specific_problem_instance):
     return ((specific_problem_instance.fault.Name + '**') if specific_problem_instance.fault else '') + ((specific_problem_instance.object_name) if specific_problem_instance.object_name else '')
     
 if __name__=="__main__":
-    
-    print datetime.datetime.now()
+    inputa = '''oanh-duong
+letam
+thaole
+hainguyen
+le-duc-hung
+nguyenminhtrang
+lambui
+chinhle
+Tham
+huyen
+le-son-ha
+jenny
+hien
+nhandohoang
+nicolasnguyenvan
+sanbui
+ 
+'''
+    print create_a_list_from_row_string(inputa) 
     

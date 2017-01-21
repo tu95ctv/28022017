@@ -5,32 +5,48 @@ var modelClassDict = {
     "thiet_bi": "ThietBi",
     "thao_tac_lien_quan": "ThaoTacLienQuan",
     "doi_tac": "DoiTac",
-    "du_an": "DuAn"
+    "du_an": "DuAn",
+    "component_lien_quan": "Component",
+    "lenh_lien_quan": 'Lenh',
 };
 var last_add_item
-
+SLASH_DISTINCTION = '/'
 $(document).ready(function() {
     var option_khong_tu_dong_search_tram
 
     option_khong_tu_dong_search_tram = $('input#id_khong_search_tu_dong_tram').prop('checked')
-        //.show-form-modal
-    $(this).on('click', '#mll-form-table-wrapper span.input-group-addon,#modal-on-mll-tables span.input-group-addon,a.manager-a-form-select-link,select#id_chon_loai_de_quan_ly,.edit-entry-btn-on-table,form#model-manager input[type=submit],.show-modal-form-link,a.show-modal-form-link_allow_edit,a.searchtable_header_sort,.search-botton,.search-manager-botton', form_table_handle)
+
+    $(".search-w input[type=text]").keyup(function(e) {
+        if (e.keyCode == 13) {
+            form_table_handle(e, 'intended_for_enter_search')
+        }
+    });
+
+
+    //.show-form-modal
+    $(this).on('click', '#mll-form-table-wrapper span.input-group-addon,#modal-on-mll-tables span.input-group-addon,a.manager-a-form-select-link,select#id_chon_loai_de_quan_ly,.edit-entry-btn-on-table,form#model-manager input[type=submit],.show-modal-form-link,a.show-modal-form-link_allow_edit,a.searchtable_header_sort,.search-botton,.search-manager-botton,input.what_g_choice', form_table_handle)
 
 
     function form_table_handle(e, intended_for, abitrary_url, sort_field) {
         console.log("okkkkkkkkkkkkkkkkk first")
+        return_sau_cuoi = false
         class_value = $(this).attr("class")
         is_no_show_return_form = false
-            //is_both_table = "both form and table"
+        //is_both_table = "both form and table"
         is_table = true
         is_form = true
         form_table_template = "normal form template" //'form_on_modal'
         hieu_ung_sau_load_form_va_table = "khong hieu ung"
-        closest_wrapper = $(this).closest('div.form-table-wrapper')
+        if (intended_for) {
+            closest_wrapper = $(e.target).closest('div.form-table-wrapper')
+        } else {
+            closest_wrapper = $(this).closest('div.form-table-wrapper')
+        }
         id_closest_wrapper = closest_wrapper.attr('id') // no importaince
+
         var table_object
         is_get_table_request_get_parameter = false
-            //table_name = '' // table_name dung de xac dinh table , sau khi submit form o modal se hien thi o day, trong truong hop force_allow_edit thi table_name attr se bi xoa 
+        //table_name = '' // table_name dung de xac dinh table , sau khi submit form o modal se hien thi o day, trong truong hop force_allow_edit thi table_name attr se bi xoa 
         if (intended_for == 'intended_for_autocomplete') {
             is_table = true
             is_form = true
@@ -73,6 +89,45 @@ $(document).ready(function() {
 
 
             //@@@@@@@@@@@@@@@
+        } else if (intended_for == 'intended_for_enter_search' || class_value.indexOf('search-botton') > -1) {
+            var query;
+            //
+            if (intended_for == 'intended_for_enter_search') { //NHAN ENTER
+                textinput = $(e.target)
+                //query = $(e.target).val();
+            } else { //KICK BUTTON
+                textinput = $(this).closest('.search-w').find('input[type=text]')
+            }
+            if (textinput.hasClass('inputtext_for_model')) {
+                var query;
+
+                //wrapper_attr_global = $(e.target).closest('.form-table-wrapper')
+                //query = wrapper_attr_global.find('#text-search-manager-input').val().split('3G_');
+                query = textinput.val()
+                url = wrapper_attr_global.find('form').attr('action')
+                url = updateURLParameter(url, 'query_main_search_by_button', query)
+
+                is_both_table = 'table only'
+                type = "GET"
+                data = {}
+
+
+
+            } else {
+                console.log('tu day', e)
+                var query;
+                query = textinput.val()
+                url = "/omckv2/modelmanager/TramForm/new/"
+                url = updateURLParameter(url, 'query_main_search_by_button', query)
+                is_both_table = 'table only'
+                type = "GET"
+                data = {}
+                hieu_ung_sau_load_form_va_table = 'active tram-table-toogle-li'
+                if (id_closest_wrapper = 'form-table-of-tram-info_dang_le_ra') {
+                    closest_wrapper = $('#form-table-of-tram-info')
+                    id_closest_wrapper = closest_wrapper.attr('id') // no importaince
+                }
+            }
         } else if (class_value.indexOf('input-group-addon') > -1) {
             dtuong_before_submit = $(this)
             find_glyphicon_calendar = $(this).find('.glyphicon-calendar')
@@ -97,7 +152,7 @@ $(document).ready(function() {
             url = "/omckv2/modelmanager/" + name + "/" + href_id + "/"
             is_table = false
             if (href_id == 'new') {
-                if (name_attr_global == 'thao_tac_lien_quan') {
+                if (name_attr_global == 'thao_tac_lien_quan' || name_attr_global == 'lenh_lien_quan' || name_attr_global == 'component_lien_quan') {
                     input_text_to_Name_field = last_add_item
                 } else {
                     input_text_to_Name_field = near_input.val()
@@ -116,30 +171,53 @@ $(document).ready(function() {
             type = "GET"
             data = {}
 
-        } else if (class_value.indexOf('search-botton') > -1) {
-            var query;
-            query = $('#text-search-input').val();
-            url = "/omckv2/modelmanager/TramForm/new/"
-            url = updateURLParameter(url, 'query_main_search_by_button', query)
-            is_both_table = 'table only'
-            type = "GET"
-            data = {}
-            hieu_ung_sau_load_form_va_table = 'active tram-table-toogle-li'
-            if (id_closest_wrapper = 'form-table-of-tram-info_dang_le_ra') {
-                closest_wrapper = $('#form-table-of-tram-info')
-                id_closest_wrapper = closest_wrapper.attr('id') // no importaince
-            }
         } else if (class_value.indexOf('search-manager-botton') > -1) {
-            var query;
+
             wrapper_attr_global = $(e.target).closest('.form-table-wrapper')
             query = wrapper_attr_global.find('#text-search-manager-input').val().split('3G_');
-            //query = $(this).closest('.search-w').find('input[type="text"]:eq(1)').val().split('3G_');
             url = wrapper_attr_global.find('form').attr('action')
             url = updateURLParameter(url, 'query_main_search_by_button', query)
 
             is_both_table = 'table only'
             type = "GET"
             data = {}
+        } else if (class_value.indexOf('what_g_choice') > -1) {
+            return_sau_cuoi = true
+            value = $(this).val()
+            $(this).prop("checked", true)
+            console.log('what_g_choice*****', value)
+            is_table = true
+            is_form = false
+            closest_wrapper = $('#form-table-of-tram-info')
+            id_closest_wrapper = 'form-table-of-tram-info'
+            is_get_table_request_get_parameter = true
+            console.log('is_get_table_request_get_parameter', is_get_table_request_get_parameter)
+
+            url = "/omckv2/modelmanager/TramForm/new/"
+
+            if (is_get_table_request_get_parameter) {
+                console.log('tai sao khogn vao day')
+                get_parameter_toggle = ''
+                var table_contain_div
+                if (table_object) {
+                    table_contain_div = table_object
+                } else {
+                    if (id_closest_wrapper == 'form-table-of-tram-info') {
+                        table_contain_div = $('#tram-table')
+                        console.log('tau muon cai nay')
+                    } else {
+                        table_contain_div = closest_wrapper
+                    }
+                }
+                url = update_parameter_from_table_parameter(table_contain_div, url)
+
+            }
+
+
+            url = updateURLParameter(url, 'what_g_choice', value)
+            type = "GET"
+            data = {}
+
         } else if (class_value.indexOf('searchtable_header_sort') > -1) {
             is_table = true
             is_form = false
@@ -168,7 +246,7 @@ $(document).ready(function() {
                 }
                 url = updateURLParameter(url, 'edited_object_id', tram_id)
                 url = removeParam('tramid', url)
-                    //url = url.replace(/&?tramid=([^&]$|[^&]*?&)/i, "")
+                //url = url.replace(/&?tramid=([^&]$|[^&]*?&)/i, "")
                 console.log('###########url new', url)
             }
             type = "GET"
@@ -195,7 +273,7 @@ $(document).ready(function() {
         } else if (class_value.indexOf('manager-form-select') > -1) {
             is_table = true
             is_form = true
-                //url = $('#id_chon_loai_de_quan_ly option:selected').val()
+            //url = $('#id_chon_loai_de_quan_ly option:selected').val()
             url = $(this).val() //url = new va method = get
             type = "GET"
             data = {}
@@ -223,9 +301,24 @@ $(document).ready(function() {
             type = "GET"
             data = {}
 
-            if (class_value.indexOf('add-command') > -1 || class_value.indexOf('Nhan-Tin-UngCuu') > -1) {
+            if (class_value.indexOf('add-comment') > -1 || class_value.indexOf('Nhan-Tin-UngCuu') > -1) {
+                console.log('dfaslkdfjl')
                 mll_id = $(this).closest("tr").find('td.id').html()
                 url = updateURLParameter(url, 'selected_instance_mll', mll_id)
+            } else if (class_value.indexOf('tinh-hinh-mang') > -1) {
+                console.log('tinh hinh mang.****')
+                yesterday_or_other = $('#bcn-select').val()
+                console.log('yesterday_or_other*****', yesterday_or_other)
+                url = updateURLParameter(url, 'yesterday_or_other', yesterday_or_other)
+                data = $('#option-bcn-form').serialize()
+                url = url + '&' + data
+                if (yesterday_or_other == 'theotable') {
+                    url = update_parameter_from_table_parameter($('#bcmll .table-manager'), url)
+                    console.log('vao day di please')
+                }
+                is_table = true
+
+
             } else if (class_value.indexOf('force_allow_edit') > -1) {
                 url = updateURLParameter(url, 'force_allow_edit', 'True')
                 $('#modal-on-mll-table').removeAttr('table_name')
@@ -317,12 +410,9 @@ $(document).ready(function() {
                             //near_input = dtuong_before_submit.closest('.input-group').find('input[type=text]')
                             near_input = dtuong_before_submit.closest('.input-group').find('input[type=text]')
                             console.log("serach lai", near_input.val())
-                                //near_input.trigger('focus')
+                            //near_input.trigger('focus')
                             near_input.focus()
                             near_input.autocomplete("search", near_input.val())
-                                //near_input = $('#mll-form-table-wrapper #id_thao_tac_lien_quan')
-
-                            //near_input.val('dfasdfdfdfd')
                         }
 
                     }
@@ -350,10 +440,10 @@ $(document).ready(function() {
                 }
             }
 
-
+            console.log('is_get_table_request_get_parameter2', is_get_table_request_get_parameter)
             //get context cua table 
             if (is_get_table_request_get_parameter) {
-
+                console.log('tai sao khogn vao day')
                 get_parameter_toggle = ''
                 var table_contain_div
                 if (table_object) {
@@ -361,12 +451,14 @@ $(document).ready(function() {
                 } else {
                     if (id_closest_wrapper == 'form-table-of-tram-info') {
                         table_contain_div = $('#tram-table')
-
+                        console.log('tau muon cai nay')
                     } else {
                         table_contain_div = closest_wrapper
                     }
                 }
                 url = update_parameter_from_table_parameter(table_contain_div, url)
+
+
                 if (!table_object) {
                     url = removeParam('table_name', url)
                 }
@@ -435,13 +527,12 @@ $(document).ready(function() {
                             must_shown_tab_ok = false
                             if (obj.attr('id') == 'tram-table' & hieu_ung_sau_load_form_va_table == 'active tram-table-toogle-li' & $('#tram-table-toogle').attr('class').indexOf('active') == -1) {
                                 console.log('i click it...............')
-                                    //$('#tram-table-toogle-li a').trigger('click')
+                                //$('#tram-table-toogle-li a').trigger('click')
                                 $('.nav-tabs a[href="#tram-table-toogle"]').tab('show')
                                 must_shown_tab_ok = true
 
                             }
                             if (must_shown_tab_ok) {
-                                console.log('tao khong muon')
 
                                 $('#tram-manager-lenh-nav-tab-wrapper-div .nav-tabs a').on('shown.bs.tab', function() {
                                     assign_and_fadeoutfadein(obj, tabledata)
@@ -517,28 +608,45 @@ $(document).ready(function() {
                 }
             },
             error: function(request, status, error) {
-                console.log('bi loi 400 hoac 403', error)
+                
+                error = error.toUpperCase()
+
+                console.log('bi loi 400 hoac 403', error,typeof(error))
                 if (error == 'FORBIDDEN') { //403
                     console.log(request.responseText)
                     data = $(request.responseText).find('#info_for_alert_box').html()
                     alert(data);
                 } else if (error == 'BAD REQUEST') {
-                    console.log('bi loi 403')
+                    console.log('bi loi 400')
                     formdata = $(request.responseText).find('.form-manager_r').html()
-                    console.log('formdata', formdata)
-                    closest_wrapper.find('.form-manager').html(formdata);
+                    if (id_closest_wrapper == 'form-table-of-tram-info') {
+                        console.log("##########1")
+                        obj = $('#tram-form')
+                    } else {
+                        console.log("##########2")
+                        obj = closest_wrapper.children('.form-manager')
+                    }
+                    obj.html(formdata);
 
                 }
 
             }
 
         });
-        return false; //ajax thi phai co cai nay. khong thi , gia su click link thi 
+        return return_sau_cuoi; //ajax thi phai co cai nay. khong thi , gia su click link thi 
     }
     $(this).on('click', '#submit-id-copy-tin-nhan', function() {
         copyToClipboard(document.getElementById("id_noi_dung_tin_nhan"));
         return false
     })
+
+    $(this).on('click', '#submit-id-copy-bao-cao', function() {
+        console.log('dfasdfdsfslkdjflkalklkdfjlkd')
+        copyToClipboard(document.getElementById("id_noi_dung_bao_cao"));
+        return false
+    })
+
+
     var obj_autocomplete = {
         create: function() {
 
@@ -563,7 +671,7 @@ $(document).ready(function() {
             }, function(data) {
                 return_data = data['key_for_list_of_item_dict']
                 if (query == 'tatca') {
-                    number_dau_hieu_co_add= 0
+                    number_dau_hieu_co_add = 0
                     is_curent_add = 0
                     response(return_data)
                     return false
@@ -579,11 +687,11 @@ $(document).ready(function() {
                         show_only_glyphicon(dtuong, 'glyphicon-info-sign')
                         dtuong.attr('href_id', data['href_id'])
                     }
-                } else if (name_attr_global == "thao_tac_lien_quan") {
+                } else if (name_attr_global == "thao_tac_lien_quan" || name_attr_global == "lenh_lien_quan" || name_attr_global == "component_lien_quan") {
                     dtuong = wrapper_attr_global.find('#div_id_' + name_attr_global + ' .glyphicon')
                     is_curent_add = data['curent_add']
                     number_dau_hieu_co_add = data['dau_hieu_co_add'] //0,1,2
-                    console.log('number_dau_hieu_co_add trong source',number_dau_hieu_co_add)
+                    console.log('number_dau_hieu_co_add trong source', number_dau_hieu_co_add)
                     if (number_dau_hieu_co_add) { //co add
                         show_only_glyphicon(dtuong, 'glyphicon-log-in')
                         dtuong.html(number_dau_hieu_co_add)
@@ -602,21 +710,21 @@ $(document).ready(function() {
 
             dtuong = wrapper_attr_global.find('#div_id_' + name_attr_global + ' .glyphicon')
             if (name_attr_global == "specific_problem_m2m") {
-                this.value = ui.item['label'] + '**'
+                this.value = ui.item['label'] + SLASH_DISTINCTION
             } else if (name_attr_global == "doi_tac") {
                 if (ui.item['desc'] == "chưa có sdt" || !ui.item['desc']) {
                     this.value = ui.item['label']
                 } else {
-                    this.value = ui.item['label'] + "*" + ui.item['desc'];
+                    this.value = ui.item['label'] + SLASH_DISTINCTION + ui.item['desc'];
                 }
                 show_only_glyphicon(dtuong, 'glyphicon-info-sign')
                 dtuong.attr("href_id", ui.item['id'])
-            } else if (name_attr_global == 'thao_tac_lien_quan') {
+            } else if (name_attr_global == 'thao_tac_lien_quan' || name_attr_global == 'lenh_lien_quan' || name_attr_global == 'component_lien_quan') {
                 var terms = split(this.value);
                 // remove the current input
                 current_input = terms.pop().replace('\s+', '');
                 x = number_dau_hieu_co_add - is_curent_add
-                    // add the selected item
+                // add the selected item
                 terms.push(ui.item['label']);
                 // add placeholder to get the comma-and-space at the end
                 terms.push("");
@@ -664,8 +772,8 @@ $(document).ready(function() {
         value = $(this).val()
         if (value.length === 0) {
             value = 'tatca'
-            if ($(this).hasClass('autocomplete')){
-               
+            if ($(this).hasClass('autocomplete')) {
+
             }
         }
         $(this).autocomplete("search", value)
@@ -680,7 +788,7 @@ $(document).ready(function() {
             doituong = closest_wrapper.find('#div_id_' + name_attr_global + ' .glyphicon')
             show_only_glyphicon(dtuong, 'glyphicon-plus')
             doituong.removeAttr("href_id")
-            if ($(this).attr('name') == 'thao_tac_lien_quan') {
+            if ($(this).attr('name') == 'thao_tac_lien_quan' || $(this).attr('name') == 'lenh_lien_quan' || $(this).attr('name') == 'component_lien_quan') {
                 doituong.html('')
             }
         }
@@ -691,135 +799,149 @@ $(document).ready(function() {
 
     $(this).on("focus", ".autocomplete_search_tram", function() {
         $(this).autocomplete({
-                create: function() {
-                    $(this).data('ui-autocomplete')._renderItem = function(ul, item) {
-                        return $('<li class="li-select-in-autocomplete-result">').append(
-                                $('<div>').append('<b>' + '<span class="greencolor">' + item.sort_field + ":</span>" + '<span class="">' + item.label + '</span>' + '</b>')
-                                .append('<div class="table-type-wrapper">'+
-                                    '<div  class="wrapper-a-tr"><div class="wrapper-dt-autocomplete" >' + '<span class="tram_field_name">SN1: </span>' + '<span class="chontram" type-tram = "SN1" type-thiet-bi = "2G&3G">' + item.sn1 + '</span>' + '</div>' + '<div class="wrapper-dt-autocomplete" >' + '<span class="tram_field_name">SN2: </span>' + '<span class="chontram" type-tram = "SN2" type-thiet-bi = "2G&3G">' + item.sn2 + '</span>' + '</div></div>' +
-                                    '<div class="wrapper-a-tr"><div class="wrapper-dt-autocomplete" >' + '<span class="tram_field_name">3G: </span>' + '<span class="chontram" type-tram = "3G" type-thiet-bi = "' + item.s3g_thietbi + '">' + item.s3g + '</span>' + '</div>' + '<div class="wrapper-dt-autocomplete" >' + '<span class="tram_field_name">2G: </span>' + '<span class="chontram" type-tram = "2G" type-thiet-bi  = "' + item.s2g_thietbi + '">' + item.s2g + '</span>' + '</div></div>' +
-                                    '<div class="wrapper-a-tr"><div class="wrapper-dt-autocomplete" >' + '<span class="tram_field_name">4G: </span>' + '<span class="chontram" type-tram = "4G" type-thiet-bi = "' + item.s4g_thietbi + '">' + item.s4g + '</span>' + '</div></div>' +
-                                    '</div>'))
-                            .appendTo(ul)
-                    }
-                },
-                focus: function(event, ui) {
-                    event.preventDefault(); // Prevent the default focus behavior.
-                    return false;
-                },
-                search: function(e, ui) {
-                    showloading = false
-                    name_attr_global = $(e.target).attr("name") //name_attr_global de phan biet cai search o top of page or at mllfilter
+            create: function() {
+                $(this).data('ui-autocomplete')._renderItem = function(ul, item) {
+                    return $('<li class="li-select-in-autocomplete-result">').append(
+                            $('<div>').append('<b>' + '<span class="greencolor">' + item.sort_field + ":</span>" + '<span class="">' + item.label + '</span>' + '</b>')
+                            .append('<div class="table-type-wrapper">' +
+                                '<div  class="wrapper-a-tr"><div class="wrapper-dt-autocomplete" >' + '<span class="tram_field_name">SN1: </span>' + '<span class="chontram" type-tram = "SN1" type-thiet-bi = "2G&3G">' + item.sn1 + '</span>' + '</div>' + '<div class="wrapper-dt-autocomplete" >' + '<span class="tram_field_name">SN2: </span>' + '<span class="chontram" type-tram = "SN2" type-thiet-bi = "2G&3G">' + item.sn2 + '</span>' + '</div></div>' +
+                                '<div class="wrapper-a-tr"><div class="wrapper-dt-autocomplete" >' + '<span class="tram_field_name">3G: </span>' + '<span class="chontram" type-tram = "3G" type-thiet-bi = "' + item.s3g_thietbi + '">' + item.s3g + '</span>' + '</div>' + '<div class="wrapper-dt-autocomplete" >' + '<span class="tram_field_name">2G: </span>' + '<span class="chontram" type-tram = "2G" type-thiet-bi  = "' + item.s2g_thietbi + '">' + item.s2g + '</span>' + '</div></div>' +
+                                '<div class="wrapper-a-tr"><div class="wrapper-dt-autocomplete" >' + '<span class="tram_field_name">4G: </span>' + '<span class="chontram" type-tram = "4G" type-thiet-bi = "' + item.s4g_thietbi + '">' + item.s4g + '</span>' + '</div>' + '<div class="wrapper-dt-autocomplete" >' + '<span class="tram_field_name">Booster: </span>' + '<span class="chontram" type-tram = "Booster" type-thiet-bi = "' + item.booster_thietbi + '">' + item.booster + '</span>' + '</div>' + '</div>' +
+                                '</div>'))
+                        .appendTo(ul)
+                }
+            },
+            focus: function(event, ui) {
+                event.preventDefault(); // Prevent the default focus behavior.
+                return false;
+            },
+            search: function(e, ui) {
+                showloading = false
+                name_attr_global = $(e.target).attr("name") //name_attr_global de phan biet cai search o top of page or at mllfilter
 
-                },
-                source: function(request, response) {
+            },
+            source: function(request, response) {
 
-                    console.log('name_attr_global', name_attr_global)
-                    var query = extractLast(request.term)
-                    $.get('/omckv2/autocomplete/', {
-                        query: query,
-                        name_attr: name_attr_global
-                    }, function(data) {
-                        return_data = data['key_for_list_of_item_dict']
-                        response(return_data)
-                    })
-                },
-                select: function(event, ui) {
-                    doituongvuaclick = $(event.toElement)
-                    console.log('doituongvuaclick class',doituongvuaclick.attr('class'))
-                    if (doituongvuaclick.attr('class') == 'chontram') {
-                        sort_field = doituongvuaclick.attr('type-tram')
-                        console.log('sort_field',sort_field)
-                        thiet_bi = doituongvuaclick.attr('type-thiet-bi')
-                        value_select = event.toElement.innerText
+                console.log('name_attr_global', name_attr_global)
+                var query = extractLast(request.term)
+                $.get('/omckv2/autocomplete/', {
+                    query: query,
+                    name_attr: name_attr_global
+                }, function(data) {
+                    return_data = data['key_for_list_of_item_dict']
+                    response(return_data)
+                })
+            },
+            select: function(event, ui) {
+                doituongvuaclick = $(event.toElement)
+                if (doituongvuaclick.attr('class') == 'chontram') {
+                    sort_field = doituongvuaclick.attr('type-tram')
+                    console.log('sort_field', sort_field)
+                    thiet_bi = doituongvuaclick.attr('type-thiet-bi')
+                    value_select = event.toElement.innerText
 
-                    } else {
-                        sort_field = ui.item.sort_field
-                        value_select = ui.item['label']
-                        thiet_bi = ui.item.thiet_bi
-                    }
+                } else {
+                    sort_field = ui.item.sort_field
+                    value_select = ui.item['label']
+                    thiet_bi = ui.item.thiet_bi
+                }
+                /*
+                if (name_attr_global == "object") {
+                    var terms = split(this.value);
+                    // remove the current input
+                    terms.pop();
+                    // add the selected item
+                    terms.push(value_select);
+                    // add placeholder to get the comma-and-space at the end
+                    terms.push("");
+                    this.value = terms.join(", ");
+                } else {
+                    this.value = value_select; //this.value tuc la gia tri hien thi trong input text
+                } */
+                var terms = split(this.value);
+                // remove the current input
+                terms.pop();
+                // add the selected item
+                terms.push(value_select);
+                // add placeholder to get the comma-and-space at the end
+                terms.push("");
+                this.value = terms.join(", ");
 
-                    if (name_attr_global == "object") {
-                        var terms = split(this.value);
-                        // remove the current input
-                        terms.pop();
-                        // add the selected item
-                        terms.push(value_select);
-                        // add placeholder to get the comma-and-space at the end
-                        terms.push("");
-                        this.value = terms.join(", ");
-                    } else {
-                        this.value = value_select; //this.value tuc la gia tri hien thi trong input text
-                    }
-                    if (name_attr_global == "object") {
-                        $('#id_site_name').val(ui.item.site_name_1)
-                        thiet_bi_input_text = $('#mll-form-table-wrapper input#id_thiet_bi')
-                        thiet_bi_input_text.val(thiet_bi)
-                        dtuong = thiet_bi_input_text.closest('.input-group').find('.glyphicon')
-                        show_only_glyphicon(dtuong, 'glyphicon-info-sign')
 
-                    }
-                    option_khong_tu_dong_search_tram = $('input#id_khong_search_tu_dong_tram').prop('checked')
-                    if (!(option_khong_tu_dong_search_tram && name_attr_global == "object")) {
-                        form_table_handle(event, 'intended_for_autocomplete', '/omckv2/modelmanager/TramForm/' + ui.item.id + '/?tramid=' + ui.item.id, sort_field)
-                    }
 
-                    return false // return thuoc ve select :
+                if (name_attr_global == "object") {
+                    $('#id_site_name').val(ui.item.site_name_1)
+                    thiet_bi_input_text = $('#mll-form-table-wrapper input#id_thiet_bi')
+                    thiet_bi_input_text.val(thiet_bi)
+                    dtuong = thiet_bi_input_text.closest('.input-group').find('.glyphicon')
+                    show_only_glyphicon(dtuong, 'glyphicon-info-sign')
+
+                    thiet_bis = thiet_bi.split('/')
+                    console.log('thiet_bi888', thiet_bi)
+                    $('select#id_type_2g_or_3g option:contains("' + thiet_bis[2] + '")').prop('selected', true);
+                    $('select#id_brand option:contains("' + thiet_bis[1] + '")').prop('selected', true);
+                }
+                option_khong_tu_dong_search_tram = $('input#id_khong_search_tu_dong_tram').prop('checked')
+                if (!(option_khong_tu_dong_search_tram && name_attr_global == "object")) {
+                    form_table_handle(event, 'intended_for_autocomplete', '/omckv2/modelmanager/TramForm/' + ui.item.id + '/?tramid=' + ui.item.id, sort_field)
                 }
 
-            }) //close autocompltete
+                return false // return thuoc ve select :
+            }
+
+        }) //close autocompltete
     });
     $(this).on("focus", ".autocomplete_search_manager", function(e) {
         $(this).autocomplete({
-                create: function() {
-                    $(this).data('ui-autocomplete')._renderItem = function(ul, item) {
-                        return $(' <li class="abc" ' + 'thietbi="' + item.label + '">')
-                            .append("<a>" + '<b>' + item.label + '</b>' + "<br>" + '<span class="std">' + item.desc + '</span>' + "</a>")
-                            .appendTo(ul);
-                    }
-                },
-                focus: function(event, ui) {
-                    event.preventDefault(); // Prevent the default focus behavior.
-                    return false;
-                },
-                search: function(e, ui) {
-                    name_attr_global = $(e.target).attr("name") //name_attr_global de phan biet cai search o top of page or at mllfilter
-                    wrapper_attr_global = $(e.target).closest('.form-table-wrapper')
-                    model_attr_global = wrapper_attr_global.find('form').attr('action')
-                    patt = /\/(\w*?)Form\//i
-                    res = patt.exec(model_attr_global)
-                    console.log('model_attr_global', res[1])
-                    model_attr_global = res[1]
-                },
-                source: function(request, response) {
-                    console.log('name_attr_global', name_attr_global)
-                    var query = extractLast(request.term)
-                    $.get('/omckv2/autocomplete/', {
-                        query: query,
-                        name_attr: name_attr_global,
-                        model_attr_global: model_attr_global
-                    }, function(data) {
-                        response(data['key_for_list_of_item_dict'])
-                            //response(projects)
-                    })
-                },
-                select: function(event, ui) {
-                    this.value = ui.item['label']
-                    form_table_handle(event, 'intended_for_manager_autocomplete', '/omckv2/modelmanager/' + model_attr_global + 'Form/' + ui.item.id + '/?tramid=' + ui.item.id)
-
-                    return false // return thuoc ve select :
+            create: function() {
+                $(this).data('ui-autocomplete')._renderItem = function(ul, item) {
+                    return $(' <li class="abc" ' + 'thietbi="' + item.label + '">')
+                        .append("<a>" + '<b>' + item.label + '</b>' + "<br>" + '<span class="std">' + item.desc + '</span>' + "</a>")
+                        .appendTo(ul);
                 }
+            },
+            focus: function(event, ui) {
+                event.preventDefault(); // Prevent the default focus behavior.
+                return false;
+            },
+            search: function(e, ui) {
+                name_attr_global = $(e.target).attr("name") //name_attr_global de phan biet cai search o top of page or at mllfilter
+                wrapper_attr_global = $(e.target).closest('.form-table-wrapper')
+                model_attr_global = wrapper_attr_global.find('form').attr('action')
+                patt = /\/(\w*?)Form\//i
+                res = patt.exec(model_attr_global)
+                console.log('model_attr_global', res[1])
+                model_attr_global = res[1]
+            },
+            source: function(request, response) {
+                console.log('name_attr_global', name_attr_global)
+                var query = extractLast(request.term)
+                $.get('/omckv2/autocomplete/', {
+                    query: query,
+                    name_attr: name_attr_global,
+                    model_attr_global: model_attr_global
+                }, function(data) {
+                    response(data['key_for_list_of_item_dict'])
+                    //response(projects)
+                })
+            },
+            select: function(event, ui) {
+                this.value = ui.item['label']
+                form_table_handle(event, 'intended_for_manager_autocomplete', '/omckv2/modelmanager/' + model_attr_global + 'Form/' + ui.item.id + '/?tramid=' + ui.item.id)
 
-            }) //close autocompltete
+                return false // return thuoc ve select :
+            }
+
+        }) //close autocompltete
     });
-    
+
     //LENH Chon lenh
     var counter = 0;
     $(this).on('click', 'table.lenh-table > tbody >tr >td.selection>input[type=checkbox] ', function() {
         this_check_box = $(this)
         chosing_row_id = this_check_box.closest("tr").find('td.id').html()
         is_check_state_before_click = this_check_box.is(':checked')
-        console.log('is_check',is_check_state_before_click)
+        console.log('is_check', is_check_state_before_click)
         if (false) { /* bo chon 1 row*/
             console.log(chosing_row_id)
             $("table#selected-lenh-table").find("td.id").filter(function() {
@@ -842,7 +964,7 @@ $(document).ready(function() {
             var newrowcopy = $('<tr>');
             this_check_box.closest("tr").find('td').each(function(i, v) {
                 this_td = $(this)
-                if (!this_td.hasClass("selection") && i <5) { /*khong add nhung selection data*/
+                if (!this_td.hasClass("selection") && i < 5) { /*khong add nhung selection data*/
                     var this_td_html = $(this).prop('outerHTML') //cu
                     newrowcopy.append(this_td_html)
 
@@ -979,14 +1101,26 @@ $(document).ready(function() {
         return false
     })
 
-    $(this).on('click', '#download-bcn', function() {
+    $(this).on('click', '.download-bcn', function() {
+        console.log('i love you thannk you')
+        id = $(this).attr('id')
+        //id =='download-bcn'
+
+
+        data = $('#option-bcn-form').serialize()
         url = $(this).attr('href')
+        url = url + '&' + data
+        console.log('new url **********', url)
         yesterday_or_other = $('#bcn-select').val()
         url = updateURLParameter(url, 'download-bcn', 'yes')
-        url = updateURLParameter(url, 'yesterday_or_other', yesterday_or_other)
+        //url = updateURLParameter(url, 'yesterday_or_other', yesterday_or_other)
         if (yesterday_or_other == 'theotable') {
             url = update_parameter_from_table_parameter($('#bcmll .table-manager'), url)
         }
+        if (id == 'download-keo-dai') {
+            url = updateURLParameter(url, 'download-keo-dai', 'yes')
+        }
+
         var win = window.open(url);
         if (win) {
             //Browser has allowed it to be opened
@@ -1079,7 +1213,9 @@ $(document).ready(function() {
     $('.datetimepicker').datetimepicker({
         format: DT_FORMAT,
     });
-
+    $('.datetimepicker_bcn').datetimepicker({
+        format: BCN_DT_FORMAT,
+    });
     $('.datetimepicker_only_date').datetimepicker({
         viewMode: 'days',
         format: DATE_FORMAT,
@@ -1101,11 +1237,11 @@ $(document).ready(function() {
 
     $(this).on('click', '#replace-carrier-return', function() {
 
-        value = $('#mll-form-table-wrapper #id_specific_problem_m2m').val().replace('\n', '')
+        value = $('#mll-form-table-wrapper #id_specific_problem_m2m').val().replace('\n', '').replace('\r', '')
         console.log('iloveyuou', value)
         $('#mll-form-table-wrapper #id_specific_problem_m2m').val(value)
     })
-    
+
     scrolify_fix_table_header($('#mll-table-id'), 580); // 160 is height     
     scrolify_fix_table_header($('#tram-table-id'), 580); // 160 is height     
     $("#loading").hide();
@@ -1116,16 +1252,16 @@ $(document).ready(function() {
         }
         showloading = true
     })
-    
-    $(this).on('click', "input[type=submit]", function() {
-        $("input[type=submit]").removeAttr("clicked");
-        $(this).attr("clicked", "true");
-    });
-    
+
+    // $(this).on('click', "input[type=submit]", function() {
+    //     $("input[type=submit]").removeAttr("clicked");
+    //     $(this).attr("clicked", "true");
+    // });
+
     $(this).ajaxComplete(function(event, xhr, settings) {
         $("#loading").hide();
-        $('.datetimepicker-command').datetimepicker({
-            format: DT_FORMAT
+        $('.datetimepicker_bcn').datetimepicker({
+            format: BCN_DT_FORMAT
         });
 
         $('.datetimepicker').datetimepicker({
@@ -1313,6 +1449,7 @@ var choosed_command_array_global = []
 var model_attr_global
 var name_attr_global
 var wrapper_attr_global
+var BCN_DT_FORMAT = 'HH:mm:SS DD/MM/YYYY'
 var DT_FORMAT = 'HH:mm DD/MM/YYYY'
 var DATE_FORMAT = 'DD/MM/YYYY'
 
@@ -1360,6 +1497,7 @@ function show_map_from_longlat() {
         map_init2(myCenter)
     } catch (err) {}
 }
+
 function removeParam(key, sourceURL) {
     var rtn = sourceURL.split("?")[0],
         param,
@@ -1430,6 +1568,7 @@ function scrolify_fix_table_header(tblAsJQueryObject, height) {
         $(this).width($(this).attr("data-item-original-width"));
     });
 }
+
 function hasClass(element, cls) {
     return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
 }

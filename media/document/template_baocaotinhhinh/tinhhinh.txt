@@ -1,0 +1,75 @@
+﻿Kính gởi Lãnh đạo RNOC
+
+{{yesterday_or_other}}
+RNOC2 báo cáo tình hình mạng vô tuyến ngày {{select_day}} như sau:
+
+I. Tình hình hoạt động mạng:
+
+1. Tình hình mất liên lạc trong ngày
+
+Trong ngày  {{select_day}} , số BTS mất liên lạc: {{count_2g}} lần, {{tong_2g}} phút; số NodeB mất liên lạc: {{count_3g}} lần, {{tong_3g}} phút. Tổng cộng {{return_for_bao_cao.tong_thoi_gian_all_2G_3G}} phút.
+Nguyên nhân mất liên lạc chủ yếu do mất điện AC tại trạm ({{return_for_bao_cao.phan_tram_ma_loi_1_2G|floatformat:0}}% thời lượng mất liên liên lạc 2G, {{return_for_bao_cao.phan_tram_ma_loi_1_3G|floatformat:0}}% thời lượng mất liên lạc của 3G); 
+do lỗi truyền dẫn nội tỉnh ({{return_for_bao_cao.phan_tram_ma_loi_5_2G|floatformat:0}}% thời lượng mất liên lạc của 2G và {{return_for_bao_cao.phan_tram_ma_loi_5_3G|floatformat:0}}% thời lượng mất liên lạc của 3G).
+
+2. Tình hình sự cố nghiêm trọng: (Số các sự cố mất liên lạc nghiêm trọng(mll>10% BTS/NodeB thuộc 1 T/Tp, mll Site-0, MLL BTS thuộc  toàn bộ 1 Quận/Huyện từ 30 phút trở lên)
+
+ - BSC_742M_BDG MLL lúc 02:12 ngày 29/11/2016 (mất 33/412 BTS tỉnh BDG) trong quá trình RNOC2 phối hợp với NET2  thay card xử lý lỗi PBUS Device Failure.
+
+ 3. Tình hình sự cố lớn: (Số các sự cố mất liên lạc lớn(mll>5-10% BTS thuộc 1 T/Tp, mll Site-0, MLL BTS thuộc toàn bộ 1 Quận/Huyện dưới 30 phút)
+
+Không có
+
+II. Các tác động trên mạng lưới: (Nâng cấp, nạp patch, test dự phòng, bảo dưỡng định kỳ, đấu chuyển, phát sóng mới, xử lý sự cố, ứng cứu thông tin…)
+
+​Xử lý sự cố mức site  0: BSC/PCU/RNC
+                Phối hợp xử lý mất báo hiệu/ trung kế: 1 lần
+                Phối hợp xử lý mất giám sát: 0 lần
+                Phối hợp xử lý cảnh báo thiết bị: 3 lần
+                Phối hợp xử lý cảnh báo nguồn: 1 lần
+                Phối hợp xử lý cảnh báo nhiệt độ: 1 lần
+                Báo NET2 ứng cứu mức BSC/TRAU/PCU/RNC: 1 lần
+Xử lý sự cố BTS/nodeB
+                Kiểm tra, báo, phối hợp VTT, NET2 xử lý trạm mất cell: 42lần
+                Kiểm tra, báo, phối hợp VTT, NET2 xử lý trạm MLL: 156 lần
+                Kiểm tra, báo, phối hợp VTT, NET2 xử lý cảnh báo sóng đứng: 12 lần 
+                Kiểm tra, báo, phối hợp VTT, NET2 xử lý chất lượng TD, đồng bộ: 1 lần
+                Kiểm tra, báo, phối hợp VTT, NET2 xử lý eNode B (4G): 1 lần 
+                Kiểm tra, phối hợp xử lý cảnh báo ngoài: 12 lần
+                Kiểm tra xử lý booster: 2 lần
+                Báo NET2 ứng cứu mức BTS/nodeB: 8 lần 
+Phối hợp hiện trường xử lý
+                Di dời trạm: 1 lần
+                Di dời indoor/outdoor/anten: 1 lần
+                Phát sóng mới: 3 lần 
+                Xử lý CLK:
+                Phối hợp INOC2 : 2 lần 
+                Phối hợp TNOC2: 1 lần
+                Phối hợp SNOC2: 2 lần
+Phối hợp bảo dưỡng outdoor BTS
+                Phối hợp VTT kiểm tra, xử lý trước/sau khi VTT bảo dưỡng outdoor: 0 lần
+Bảo dưỡng cấp 2 BSC/TRAU/RNC:
+Bảo dưỡng cấp 1 BSC/TRAU/RNC:
+Xử lý phản ánh khách hàng
+                Qua mail: 0 lần
+                Qua điện thoại: 1 lần
+                Qua kênh CCOS: 0 lần
+Khai báo SCDL
+                Khai báo trạm:
+                Khai báo chuyển cổng kết nối: 0 lần
+                Khai báo cảnh báo EAS: 0 lần
+Báo cáo
+                Báo cáo HW:
+                Báo cáo công việc  ngày/ tuần : 1 lần
+                Báo cáo tổng hợp tình hình  mạng vô tuyến ngày: 1 lần
+                Báo cáo MLL kéo dài ngày: 1 lần 
+Đối soát số liệu
+
+III. Tồn tại, đánh giá, đề xuất:
+
+Các trạm còn tồn tại MLL kéo dài đến ngày 28/11/2016:
+Tổng cộng 13 trạm:
+Vĩnh Long: 09 trạm 3G: MLL do hư card điều khiển, hiện tại hết  card ứng cứu, đang chờ NET2 điều chuyển card ứng cứu.
+Tiền Giang: 01 trạm 3G: MLL do hư card điều khiển, hiện tại hết  card ứng cứu, đang chờ NET2 điều chuyển card ứng cứu.
+Hậu Giang: 01 trạm 3G: MLL do hư  card điều khiển+ hư module nguồn, hiện tại hết  vật tư ứng cứu, đang chờ NET2 điều chuyển  vật tư ứng cứu.
+Trà Vinh: 01 trạm 3G: MLL do hư card điều khiển, hiện tại hết  card ứng cứu, đang chờ NET2 điều chuyển card ứng cứu.
+Sóc Trăng: 01 trạm 3G: MLL do hư card điều khiển, hiện tại hết  card ứng cứu, đang chờ NET2 điều chuyển card ứng cứu.

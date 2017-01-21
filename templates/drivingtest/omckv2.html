@@ -30,6 +30,7 @@
          <ul class="nav nav-tabs">
             <li id="tram-form-toogle-li" ><a data-toggle="tab" href="#tram-form-toogle" >Trạm Form</a></li>
             <li class="active" id="tram-table-toogle-li"><a data-toggle="tab" href="#tram-table-toogle" style="color:blue">Trạm Table</a></li>
+            <li ><a data-toggle="tab" href="#thongke" style="color: #cc00ff">Thống kê</a></li>
             <li ><a data-toggle="tab" href="#command-toggle" style="color: #cc00ff">Lệnh ( Command)</a></li>
             <li><a data-toggle="tab" href="#history_search">History Search</a></li>
             <li><a data-toggle="tab" href="#manager" style="color:green">Manager</a></li>
@@ -47,6 +48,11 @@
             </div>
          </div>
          <div id= "tram-table-toogle" class="tab-pane active fade in">
+            <div class="row">
+               <input type="radio" class="what_g_choice" name="what_g_choicen" value="2G"> 2G<br>
+               <input type="radio" class="what_g_choice" name="what_g_choicen" value="3G"> 3G<br>
+               <input type="radio" class="what_g_choice" name="what_g_choicen" value="all"> ALL
+            </div>
             <div id ="tram-table" class="table-manager" style="padding-top:20px;">
                <div>
                   <p class="table-name">{{tramtable.table_name }}</p>
@@ -54,6 +60,7 @@
                </div>
             </div>
          </div>
+ 
          <div id="command-toggle" class="tab-pane  fade in form-table-wrapper">
             <div class="form-manager" >
                <p class="form-name">{{commandform.form_name }}</p>
@@ -69,7 +76,7 @@
                </div>
             </div>
             </br>
-            <div class="col-sm-6 table-manager" style = "clear:both;"> 
+            <div class="col-sm-6 table-manager" style = "clear:both;">
                <p class="table-name">{{lenhtable.table_name }}</p>
                {% render_table lenhtable "drivingtest/custom_table_template_mll.html"%}
             </div>
@@ -108,8 +115,8 @@
                <div class="col-sm-6 " id ="search-manager-group" >
                   <div> <b>Search nhanh manager</b></div>
                   <div class = "search-w input-group" >
-                     <input type="text" class="form-control autocomplete_search_manager" id="text-search-manager-input" placeholder="Search in this database" data-provide="typeahead" name="manager_suggestion"/>
-                     <span class="input-group-btn" ><button class="btn btn-info search-manager-botton" type="button"><i class ="glyphicon glyphicon-search"></i></button>
+                     <input type="text" class="form-control autocomplete_search_manager inputtext_for_model" id="text-search-manager-input" placeholder="Search in this database" data-provide="typeahead" name="manager_suggestion"/>
+                     <span class="input-group-btn" ><button class="btn btn-info search-botton" type="button"><i class ="glyphicon glyphicon-search"></i></button>
                      </span>
                   </div>
                </div>
@@ -119,27 +126,42 @@
             <div class = "col-sm-8 table-manager" >
             </div>
          </div>
+                 <div id = "thongke" class="tab-pane  fade in">
+            <div id="center">
+               {% render_table thongKeSoLuongTable  "drivingtest/custom_table_template_mll.html"%}
+            </div>
+         </div>
+
+         
          <div id="bcmll" class="tab-pane  fade in form-table-wrapper">
             <p class="form-name">{{BCNOSS_form.form_name }}</p>
             <div class="form-manager" >
                {% crispy BCNOSS_form %}
             </div>
             </br>
-               <div id="bcn-option-div" class="col-sm-offset-6" style="position:relative;width:25%;top:-150px">
-                  <div  class="form-group ">
+            <div id="bcn-option-div" class="col-sm-offset-6" style="position:relative;width:25%;top:-150px">
+               <div  class="form-group ">
+                  <form id="option-bcn-form">
                      <label for="bcn-select" class="control-label ">
                      Chọn ngày báo cáo để download
                      </label> 
                      <div class="controls " >
-                        <select class="nullbooleanselect form-control" id="bcn-select" name="active_3G">
+                        <select class="nullbooleanselect form-control" name="yesterday_or_other" id="bcn-select" name="active_3G">
                            <option value="Yesterday" selected="selected">Yesterday</option>
                            <option value="Today">Today</option>
-                           <option value="theotable">du lieu theo table</option>
+                           <option value="theotable">Dữ liệu từ lọc</option>
                         </select>
-                        <a style="margin-top:15px;" class="btn btn-primary" id = "download-bcn" href="/omckv2/modelmanager/BCNOSSForm/new/?downloadd4=yes&downloadtable=xls">download</a>
+                        <div id="option-bcn" class="checkbox"> <label for="id_option-bcn" class=""> <input checked="checked" class="checkboxinput" id="id_option-bcn" name="exclude_4" type="checkbox">
+                           exclude 4?
+                           </label> 
+                        </div>
+                        <a style="margin-top:15px;" class="btn btn-primary download-bcn"  id = "download-bcn" href="/omckv2/modelmanager/BCNOSSForm/new/?downloadd4=yes&downloadtable=xls">download</a>
+                        <a style="margin-top:15px;" class="btn btn-primary download-bcn"  id = "download-keo-dai" href="/omckv2/modelmanager/BCNOSSForm/new/?downloadd4=yes&downloadtable=xls">download MLL kéo dài</a>
+                        <a style="margin-top:15px;" class="btn btn-primary  show-modal-form-link tinh-hinh-mang"   href="/omckv2/modelmanager/BCNOSSForm/new/?showtinhhinh=yes">Show tình hình</a>
                      </div>
-                  </div>
+                  </form>
                </div>
+            </div>
             <div class="row" style = "margin-top:-150px;">
                <div class="col-sm-3 ">
                   <div class = "search-w input-group" style="margin:15px">
@@ -148,8 +170,7 @@
                   </div>
                </div>
             </div>
-          
-            <div class="col-sm-12 table-manager" style = "clear:both;"> 
+            <div class="col-sm-12 table-manager" style = "clear:both;">
                <p class="table-name">{{BCNOSS_table.table_name}}</p>
                {% render_table BCNOSS_table "drivingtest/custom_table_template_bcn.html"%}
             </div>
@@ -170,25 +191,28 @@
          </div>
       </div>
       <ul class="nav nav-tabs">
-         <li class="active "  ><a data-toggle="tab" href="#trucca-toggle" style="color:red">Truc ca Tab</a></li>
+         <li class="active "  ><a data-toggle="tab" href="#trucca-toggle" style="color:red">Trực ca Tab</a></li>
          <li class="hide-tab"><a data-toggle="tab" href="#hide-trucca">Hide Trực Ca</a></li>
          <li class="hide-tab"><a data-toggle="tab" href="#mll-trucca-option">Option</a></li>
+         <li class="hide-tab"><a data-toggle="tab" href="#bao-cao-tinh-hinh-mang">Báo cáo tình hình mạng vô tuyến</a></li>
       </ul>
       <div class="tab-content">
-         <div id="trucca-toggle" class="tab-pane active fade in form-table-wrapper">
-            <div class="form-table-wrapper" id="mll-form-table-wrapper">
-               <div class="col-sm-12 form-manager" style="padding-top:20px;">
-                  {%if mllform.form_name %}
-                  <p class="form-name">{{mllform.form_name }}</p>
-                  {%endif%}
-                  {% crispy mllform %}
-                  {{notification|safe}}
-               </div>
-               <div class="col-sm-12 table-manager" >
-                  {%if mlltable.table_name %}
-                  <p class="table-name">{{mlltable.table_name}}</p>
-                  {%endif%}
-                  {% render_table mlltable "drivingtest/custom_table_template_mll.html" %}
+         <div id="trucca-toggle" class="tab-pane active fade in">
+            <div >
+               <div class="form-table-wrapper" id="mll-form-table-wrapper">
+                  <div class="col-sm-12 form-manager" style="padding-top:20px;">
+                     {%if mllform.form_name %}
+                     <p class="form-name">{{mllform.form_name }}</p>
+                     {%endif%}
+                     {% crispy mllform %}
+                     {{notification|safe}}
+                  </div>
+                  <div class="col-sm-12 table-manager" >
+                     {%if mlltable.table_name %}
+                     <p class="table-name">{{mlltable.table_name}}</p>
+                     {%endif%}
+                     {% render_table mlltable "drivingtest/custom_table_template_mll.html" %}
+                  </div>
                </div>
             </div>
          </div>
@@ -202,6 +226,34 @@
                </div>
             </div>
          </div>
+         <div id="bao-cao-tinh-hinh-mang" class="tab-pane  fade in ">
+            <!--
+               <div id="bcn-option-div1" class="col-sm-offset-1" style="position:relative;width:25%">
+                     <div  class="form-group ">
+                        <label for="bcn-select1" class="control-label ">
+                        Chọn ngày để download tình hình hoạt động
+                        </label> 
+                        <div class="controls " >
+                           <select class="nullbooleanselect form-control" id="bcn-select1" name="active_3G">
+                              <option value="Yesterday" selected="selected">Yesterday</option>
+                              <option value="Today">Today</option>
+                              <option value="theotable">Dữ liệu từ lọc</option>
+                           </select>
+                          
+                           <a class="btn btn-primary show-modal-form-link tinh-hinh-mang" href="/omckv2/modelmanager/BaoCaoTinhHinhMangVoTuyenForm/new/">Show báo cáo</a>
+                        </div>
+                        
+                     </div>
+                  </div>
+                  -->
+         </div>
+         <!--
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="true">Configuration Menu<span class="caret"></span></a>
+                           <ul class="dropdown-menu" role="menu">
+                              <li><a href="/omckv2/modelmanager/BaoCaoTinhHinhMangVoTuyenForm/new/" class="show-modal-form-link">BaoCaoTinhHinhMangVoTuyen</a></li>
+                              <li><a href="/omckv2/changepassword/">Change password</a></li>
+                           </ul>
+            -->
       </div>
    </div>
 </div>

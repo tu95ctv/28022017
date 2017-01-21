@@ -1,0 +1,218 @@
+{% extends 'drivingtest/base.html' %}
+{% load render_table from django_tables2 %}
+{% load get_current_time%}
+{% block title %}OMCKV2-Home page{% endblock %}
+{% block body_block %}
+{% load crispy_forms_tags %}
+<!-- Modal -->
+<div class="modal fade" id="modal-on-mll-table" role="dialog"></div>
+<!--####-->
+<div class="container-fluid main-body-page">
+   <div class="col-sm-12">
+      <div class="panel-group" >
+         <div class="panel panel-danger">
+            <div class="panel-heading">
+               <h2 class = "tram-command text-danger" align="center" >
+               Thông Tin Trạm
+               <h2>
+            </div>
+         </div>
+      </div>
+      <div class = "row" style="margin-bottom:30px;">
+         <div class=" col-sm-6 col-sm-offset-3 ">
+            <div class = "search-w input-group" style="margin-top:20px">
+               <input type="text" style = "height:50px;font-size:15px"class="form-control autocomplete_search_tram" id="text-search-input" placeholder="Search Trạm..." data-provide="typeahead" name="main_suggestion"/><span class="input-group-btn" ><button style = "margin-left:5px;height:50px;width:50px" class="btn btn-success search-botton" type="button"><i class ="glyphicon glyphicon-search"></i></button>
+               </span>
+            </div>
+         </div>
+      </div>
+      <div id = "tram-manager-lenh-nav-tab-wrapper-div">
+         <ul class="nav nav-tabs">
+            <li id="tram-form-toogle-li" ><a data-toggle="tab" href="#tram-form-toogle" >Trạm Form</a></li>
+            <li class="active" id="tram-table-toogle-li"><a data-toggle="tab" href="#tram-table-toogle" style="color:blue">Trạm Table</a></li>
+            <li ><a data-toggle="tab" href="#command-toggle" style="color: #cc00ff">Lệnh ( Command)</a></li>
+            <li><a data-toggle="tab" href="#history_search">History Search</a></li>
+            <li><a data-toggle="tab" href="#manager" style="color:green">Manager</a></li>
+            <li><a data-toggle="tab" href="#bcmll" style="color:orance">Báo cáo Mất liên lạc</a></li>
+            <li class=" hide-tab" ><a data-toggle="tab" href="#Hide-tab">Hide Quản lý...</a></li>
+         </ul>
+      </div>
+      <div  id = "form-table-of-tram-info" class="tab-content form-table-wrapper" >
+         <div id ="tram-form-toogle" class="tab-pane fade">
+            <div  id ="tram-form" class=" form-manager" style="padding-top:20px;margin-left:40px;">
+               {%if tramform.form_name %}
+               <p class="form-name">{{tramform.form_name }}</p>
+               {%endif%}
+               {% crispy tramform %}
+            </div>
+         </div>
+         <div id= "tram-table-toogle" class="tab-pane active fade in">
+            <div id ="tram-table" class="table-manager" style="padding-top:20px;">
+               <div>
+                  <p class="table-name">{{tramtable.table_name }}</p>
+                  {% render_table tramtable  "drivingtest/custom_table_template_mll.html"%}
+               </div>
+            </div>
+         </div>
+         <div id="command-toggle" class="tab-pane  fade in form-table-wrapper">
+            <div class="form-manager" >
+               <p class="form-name">{{commandform.form_name }}</p>
+               {% crispy commandform %}
+            </div>
+            </br>
+            <div class="row">
+               <div class="col-sm-3 ">
+                  <div class = "search-w input-group" style="margin:15px">
+                     <input type="text" class="form-control autocomplete_search_manager" id="text-search-manager-input" placeholder="Search lệnh" data-provide="typeahead" name="manager_suggestion"/><span class="input-group-btn" ><button class="btn btn-success search-manager-botton" type="button"><i class ="glyphicon glyphicon-search"></i></button>
+                     </span>
+                  </div>
+               </div>
+            </div>
+            </br>
+            <div class="col-sm-6 table-manager" style = "clear:both;"> 
+               <p class="table-name">{{lenhtable.table_name }}</p>
+               {% render_table lenhtable "drivingtest/custom_table_template_mll.html"%}
+            </div>
+            <div class="col-sm-6 ">
+               <p class="table-name">Lệnh đang chọn Table</p>
+               <table id="selected-lenh-table" class="table  table-bordered">
+                  <thead>
+                     <tr>
+                        <th class="desc id orderable sortable">ID</th>
+                        <th class="command orderable sortable">command</th>
+                        <th class="orderable sortable ten_lenh"> Name</th>
+                        <th class="mo_ta orderable sortable">Thiết Bị</th>
+                        <th class="edit_comlumn">Delete</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+               </table>
+               <input type="button" class="generate-command  btn btn-primary "  value="generate-command" />
+               <textarea autocomplete="off" class="command-erea"></textarea>
+            </div>
+         </div>
+         <div id="history_search" class="tab-pane fade form-table-wrapper">
+            <div class="form-manager">
+            </div>
+            <div class = "table-manager" >
+               <p class="table-name">{{history_search_table.table_name }}</p>
+               {% render_table history_search_table "drivingtest/custom_table_template_mll.html" %}
+            </div>
+         </div>
+         <div id="manager" class="tab-pane fade form-table-wrapper">
+            <div class="row" style="margin:30px 0px;">
+               <div class="col-sm-4 select-model" >
+                  {% crispy model_manager_form %}
+               </div>
+               <div class="col-sm-6 " id ="search-manager-group" >
+                  <div> <b>Search nhanh manager</b></div>
+                  <div class = "search-w input-group" >
+                     <input type="text" class="form-control autocomplete_search_manager inputtext_for_model" id="text-search-manager-input" placeholder="Search in this database" data-provide="typeahead" name="manager_suggestion"/>
+                     <span class="input-group-btn" ><button class="btn btn-info search-botton" type="button"><i class ="glyphicon glyphicon-search"></i></button>
+                     </span>
+                  </div>
+               </div>
+            </div>
+            <div class="col-sm-4 form-manager" style = "overflow:auto;max-height:600px" >
+            </div>
+            <div class = "col-sm-8 table-manager" >
+            </div>
+         </div>
+         <div id="bcmll" class="tab-pane  fade in form-table-wrapper">
+            <p class="form-name">{{BCNOSS_form.form_name }}</p>
+            <div class="form-manager" >
+               {% crispy BCNOSS_form %}
+            </div>
+            </br>
+               <div id="bcn-option-div" class="col-sm-offset-6" style="position:relative;width:25%;top:-150px">
+                  <div  class="form-group ">
+                     <label for="bcn-select" class="control-label ">
+                     Chọn ngày báo cáo để download
+                     </label> 
+                     <div class="controls " >
+                        <select class="nullbooleanselect form-control" id="bcn-select" name="active_3G">
+                           <option value="Yesterday" selected="selected">Yesterday</option>
+                           <option value="Today">Today</option>
+                           <option value="theotable">du lieu theo table</option>
+                        </select>
+                        <a style="margin-top:15px;" class="btn btn-primary" id = "download-bcn" href="/omckv2/modelmanager/BCNOSSForm/new/?downloadd4=yes&downloadtable=xls">download</a>
+                     </div>
+                  </div>
+               </div>
+            <div class="row" style = "margin-top:-150px;">
+               <div class="col-sm-3 ">
+                  <div class = "search-w input-group" style="margin:15px">
+                     <input type="text" class="form-control autocomplete_search_manager" id="text-search-manager-input" placeholder="Search in this database" data-provide="typeahead" name="manager_suggestion"/><span class="input-group-btn" ><button class="btn btn-success search-manager-botton" type="button"><i class ="glyphicon glyphicon-search"></i></button>
+                     </span>
+                  </div>
+               </div>
+            </div>
+          
+            <div class="col-sm-12 table-manager" style = "clear:both;"> 
+               <p class="table-name">{{BCNOSS_table.table_name}}</p>
+               {% render_table BCNOSS_table "drivingtest/custom_table_template_bcn.html"%}
+            </div>
+         </div>
+         <div id="Hide-tab" class=" tab-pane  fade in">
+            <p class="hiding-tab" style="font-size:20;color:red;"> Hiding Quản lý, Lệnh , Lịch sử tìm kiếm</p>
+         </div>
+      </div>
+   </div>
+   <div class="col-sm-12 truc-ca" style="padding-top:20px;" id = "mll-and-option-and-hide">
+      <div class="panel-group">
+         <div class="panel panel-info">
+            <div class="panel-heading" style = "background-color:#ccffdd">
+               <h2 class = "tram-command text-danger" align="center" >
+               Trực Ca 
+               <h2>
+            </div>
+         </div>
+      </div>
+      <ul class="nav nav-tabs">
+         <li class="active "  ><a data-toggle="tab" href="#trucca-toggle" style="color:red">Trực ca Tab</a></li>
+         <li class="hide-tab"><a data-toggle="tab" href="#hide-trucca">Hide Trực Ca</a></li>
+         <li class="hide-tab"><a data-toggle="tab" href="#mll-trucca-option">Option</a></li>
+      </ul>
+      <div class="tab-content">
+         <div id="trucca-toggle" class="tab-pane active fade in form-table-wrapper">
+            <div class="form-table-wrapper" id="mll-form-table-wrapper">
+               <div class="col-sm-12 form-manager" style="padding-top:20px;">
+                  {%if mllform.form_name %}
+                  <p class="form-name">{{mllform.form_name }}</p>
+                  {%endif%}
+                  {% crispy mllform %}
+                  {{notification|safe}}
+               </div>
+               <div class="col-sm-12 table-manager" >
+                  {%if mlltable.table_name %}
+                  <p class="table-name">{{mlltable.table_name}}</p>
+                  {%endif%}
+                  {% render_table mlltable "drivingtest/custom_table_template_mll.html" %}
+               </div>
+            </div>
+         </div>
+         <div id="hide-trucca" class="tab-pane  fade in form-table-wrapper">
+            <p class="hiding-tab" style="font-size:20px;color:red;"> Hiding Trực Ca </p>
+         </div>
+         <div id="mll-trucca-option" class="tab-pane  fade in form-table-wrapper">
+            <div class="form-table-wrapper" id="profile-loc-ca">
+               <div class="col-sm-12 form-manager" style="padding-top:20px;">
+                  {% crispy userprofileform %}
+               </div>
+            </div>
+         </div>
+         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="true">Configuration Menu<span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                           <li><a href="/omckv2/modelmanager/BaoCaoTinhHinhMangVoTuyenForm/new/" class="show-modal-form-link">BaoCaoTinhHinhMangVoTuyen</a></li>
+                           <li><a href="/omckv2/changepassword/">Change password</a></li>
+                        </ul>
+      </div>
+   </div>
+</div>
+<!-- end container-->
+<div id="loading">
+   <img id ="loading-image"src="/media/ajax-loader.gif">
+   <H2>LOADING</H2>
+</div>
+{% endblock %}

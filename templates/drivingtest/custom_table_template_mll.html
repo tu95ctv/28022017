@@ -10,9 +10,7 @@
 {% block table %}
 <table{% if table.attrs %} {{ table.attrs.as_html }}{% endif %}>
     {% block table.thead %}
-   
     <thead>
-
         <tr>
         {% for column in table.columns %}
             {% if column.orderable %}
@@ -98,9 +96,10 @@
 {%endif%}
 {% block table.report %}
         {%if table.is_report_download%}
+        <!--
         <a href="{{table.jquery_url}}{% querystring table.param_report_d4=table.param_report_d4_yes %}&downloadtable=csv">
                     <img src="{{ STATIC_URL }}img/csv_icon.png" title="{{ label }}"/>
-                </a>
+                </a> -->
         <a href="{{table.jquery_url}}{% querystring table.param_report_d4=table.param_report_d4_yes %}&downloadtable=xls">
                     <img src="{{ STATIC_URL }}img/xls_icon.png" title="{{ label }}"/>
                 </a>
